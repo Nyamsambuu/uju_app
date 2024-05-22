@@ -1,0 +1,67 @@
+name: uju_app
+description: "uju.mn"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  flutter_signin_button: ^2.0.0
+  ant_design_flutter: ^0.0.1+5
+  http: ^0.13.3
+  fluttertoast: ^8.0.8
+  flutter_svg: ^1.0.3
+  intl: ^0.17.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: ^0.9.2
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "lib/assets/images/uju4.png"
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - lib/assets/images/
+    - lib/assets/fonts/
+
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: lib/assets/fonts/Roboto-Regular.ttf
+        - asset: lib/assets/fonts/Roboto-Italic.ttf
+          style: italic
+        - asset: lib/assets/fonts/Roboto-Bold.ttf
+          weight: 700
+        - asset: lib/assets/fonts/Roboto-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: lib/assets/fonts/Roboto-Black.ttf
+          weight: 900
+        - asset: lib/assets/fonts/Roboto-BlackItalic.ttf
+          weight: 900
+          style: italic
+        - asset: lib/assets/fonts/Roboto-Light.ttf
+          weight: 300
+        - asset: lib/assets/fonts/Roboto-LightItalic.ttf
+          weight: 300
+          style: italic
+        - asset: lib/assets/fonts/Roboto-Medium.ttf
+          weight: 500
+        - asset: lib/assets/fonts/Roboto-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: lib/assets/fonts/Roboto-Thin.ttf
+          weight: 100
+        - asset: lib/assets/fonts/Roboto-ThinItalic.ttf
+          weight: 100
+          style: italic
