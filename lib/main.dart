@@ -1,19 +1,26 @@
+// lib/main.dart
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:uju_app/screens/home-screen.dart';
-import 'package:uju_app/screens/orders_page.dart';
-import 'package:uju_app/screens/profile_page.dart';
-import 'package:uju_app/screens/search_page.dart';
-import 'package:uju_app/components/footer.dart';
-import 'package:uju_app/theme/app_theme.dart';
+import 'package:uju_app/routes/app_router.dart';
+import 'package:uju_app/screens/home_screen.dart';
+import 'theme/app_theme.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  final appRouter = AppRouter();
+  runApp(MyApp(appRouter: appRouter));
+}
 
 class MyApp extends StatelessWidget {
+  final AppRouter appRouter;
+
+  MyApp({required this.appRouter});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: MainPage(),
+    return MaterialApp.router(
       theme: AppTheme.lightTheme,
+      routerDelegate: appRouter.delegate(),
+      routeInformationParser: appRouter.defaultRouteParser(),
     );
   }
 }
@@ -25,37 +32,52 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
-  final PageController _pageController = PageController();
-
-  final List<Widget> _pages = [
-    HomeScreen(),
-    SearchPage(),
-    OrdersPage(),
-    ProfilePage(),
-  ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      switch (index) {
+        case 0:
+          context.router.replace(HomeRoute());
+          break;
+        case 1:
+          context.router.replace(SearchRoute());
+          break;
+        case 2:
+          context.router.replace(OrdersRoute());
+          break;
+        case 3:
+          context.router.replace(ProfileRoute());
+          break;
+      }
     });
-    _pageController.jumpToPage(index);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        children: _pages,
-      ),
-      bottomNavigationBar: Footer(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
+      body: AutoRouter(),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            label: 'Orders',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
       ),
     );
   }

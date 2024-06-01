@@ -130,18 +130,18 @@ class ProductItem extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            SizedBox(height: 4),
+            SizedBox(height: 2),
             Text(
               price,
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
-            SizedBox(height: 4),
+            SizedBox(height: 2),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.star, color: Colors.orange, size: 16),
+                    Icon(Icons.bookmark_border, color: Colors.orange, size: 16),
                     SizedBox(width: 4),
                     Text(
                       salecount != null ? salecount.toString() : '0',
@@ -149,10 +149,11 @@ class ProductItem extends StatelessWidget {
                     ),
                   ],
                 ),
+                SizedBox(width: 10),
                 Row(
                   children: [
-                    Icon(Icons.star, color: Colors.orange, size: 16),
-                    SizedBox(width: 4),
+                    Icon(Icons.sell_outlined, color: Colors.orange, size: 16),
+                    SizedBox(width: 2),
                     Text(
                       salecount != null ? salecount.toString() : '0',
                       style: TextStyle(fontSize: 14, color: Colors.grey),

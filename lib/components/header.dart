@@ -1,5 +1,6 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:uju_app/components/menu_categories.dart';
+import 'package:uju_app/routes/app_router.dart';
 
 class Header extends StatelessWidget {
   @override
@@ -10,10 +11,7 @@ class Header extends StatelessWidget {
       leading: IconButton(
         icon: Icon(Icons.menu, color: Colors.black),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => MenuCategories()),
-          );
+          context.router.push(MenuCategoriesRoute());
         },
       ),
       title: Row(
@@ -46,7 +44,7 @@ class Header extends StatelessWidget {
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.favorite_border, color: Colors.black),
+          icon: Icon(Icons.bookmark_border, color: Colors.black),
           onPressed: () {},
         ),
         IconButton(

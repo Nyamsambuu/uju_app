@@ -1,3 +1,5 @@
+// lib/screens/home_screen.dart
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import '../components/header.dart';
 import '../components/slider.dart';
@@ -5,6 +7,7 @@ import '../components/category_list.dart';
 import '../components/product_list.dart';
 import '../components/drawer_content.dart';
 
+@RoutePage()
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -54,7 +57,6 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        SizedBox(height: 16),
                         ProductList(),
                       ],
                     ),

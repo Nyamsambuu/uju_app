@@ -1,8 +1,10 @@
 // lib/components/menu_categories.dart
 import 'package:flutter/material.dart';
+import 'package:auto_route/auto_route.dart';
 import '../api/api_service.dart';
 import '../api/api_url.dart';
 
+@RoutePage()
 class MenuCategories extends StatelessWidget {
   final ApiService apiService = ApiService();
 
@@ -14,7 +16,7 @@ class MenuCategories extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            context.router.pop();
           },
         ),
       ),
@@ -213,6 +215,27 @@ class MenuCategories extends StatelessWidget {
             );
           }
         },
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(30.0),
+        child: ElevatedButton(
+          onPressed: () {
+            // Handle logout logic here
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xFFFA541B),
+            foregroundColor: Colors.white,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.logout), // Add your icon here
+              SizedBox(
+                  width: 8), // Add some space between the icon and the text
+              Text('ГАРАХ'),
+            ],
+          ),
+        ),
       ),
     );
   }
