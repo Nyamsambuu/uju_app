@@ -2,7 +2,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:uju_app/routes/app_router.dart';
-import 'package:uju_app/screens/home_screen.dart';
 import 'theme/app_theme.dart';
 
 void main() {

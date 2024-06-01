@@ -121,6 +121,11 @@ class ProductItem extends StatelessWidget {
                       ),
                     ),
                   ),
+                Positioned(
+                  bottom: 2,
+                  right: 0,
+                  child: Icon(Icons.bookmark_border, color: Colors.white),
+                ),
               ],
             ),
             SizedBox(height: 8),
@@ -144,7 +149,7 @@ class ProductItem extends StatelessWidget {
                     Icon(Icons.bookmark_border, color: Colors.orange, size: 16),
                     SizedBox(width: 4),
                     Text(
-                      salecount != null ? salecount.toString() : '0',
+                      wishlistcount != null ? wishlistcount.toString() : '0',
                       style: TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                   ],

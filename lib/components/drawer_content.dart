@@ -16,24 +16,27 @@ class DrawerContent extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final category = snapshot.data![index];
-              final imageUrl = category['images'] != null &&
-                      category['images'].isNotEmpty
-                  ? '${getBaseURL()}/api/file/download?ID=${category['images'][0]}'
-                  : null;
-              return ListTile(
-                leading: imageUrl != null
-                    ? Image.network(imageUrl, width: 40, height: 40)
-                    : null,
-                title: Text(category['name']),
-                onTap: () {
-                  // Handle category tap
-                },
-              );
-            },
+          return Container(
+            color: Colors.white, // Set background color to white
+            child: ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final category = snapshot.data![index];
+                final imageUrl = category['images'] != null &&
+                        category['images'].isNotEmpty
+                    ? '${getBaseURL()}/api/file/download?ID=${category['images'][0]}'
+                    : null;
+                return ListTile(
+                  leading: imageUrl != null
+                      ? Image.network(imageUrl, width: 40, height: 40)
+                      : null,
+                  title: Text(category['name']),
+                  onTap: () {
+                    // Handle category tap
+                  },
+                );
+              },
+            ),
           );
         }
       },
