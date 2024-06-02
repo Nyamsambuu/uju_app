@@ -1,6 +1,8 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:uju_app/models/product_model.dart';
+
 class ApiService {
   static const String baseUrl = 'http://159.223.73.3:8080';
 
@@ -59,6 +61,46 @@ class ApiService {
       return data['retdata'];
     } else {
       throw Exception('Failed to load slider images');
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchUser(String userid) async {
+    final response = await http
+        .get(Uri.parse('$baseUrl/api/systems/User/get_user?userid=$userid'));
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load user');
+    }
+  }
+
+  Future<Map<String, dynamic>> getWishlists(String userid) async {
+    final response = await http
+        .get(Uri.parse('$baseUrl/api/Product/get_wishlists?userid=$userid'));
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load wishlists');
+    }
+  }
+
+  Future<Map<String, dynamic>> getShoppingCart(String userid) async {
+    final response = await http
+        .get(Uri.parse('$baseUrl/api/Product/get_shoppingcart?userid=$userid'));
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load wishlists');
+    }
+  }
+
+  Future<ProductModel> fetchProduct(int productid) async {
+    final response = await http
+        .get(Uri.parse('$baseUrl/api/Product/get_Item?id=$productid'));
+    if (response.statusCode == 200) {
+      return ProductModel.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to product item');
     }
   }
 }

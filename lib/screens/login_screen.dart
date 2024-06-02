@@ -1,8 +1,13 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uju_app/providers/app_provider.dart';
+import 'package:uju_app/routes/app_router.dart';
 import 'package:uju_app/theme/app_theme.dart'; // Import the theme file if it is separate
 import 'package:uju_app/api/auth_api.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+@RoutePage()
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -27,21 +32,25 @@ class _LoginScreenState extends State<LoginScreen> {
         _passwordController.text,
       );
 
-      // ignore: unnecessary_null_comparison
       if (data != null) {
+        // Assuming the data contains 'userid' and 'token'
+        final token = data['retdata']['access_token'];
+
+        // Get the AppProvider and login
+        final appProvider = Provider.of<AppProvider>(context, listen: false);
+        await appProvider.login(token);
+
         // Show success toast
         Fluttertoast.showToast(
-          msg: "Амжилттай",
+          msg: data['retmsg'] ?? 'Амжилттай нэвтэрлээ',
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.TOP,
           backgroundColor: Colors.green,
           textColor: Colors.white,
           fontSize: 16.0,
         );
-        // Handle successful login, e.g., navigate to another screen
-        print('Login successful: $data');
-        // Example: Navigate to another screen
-        // Navigator.pushReplacementNamed(context, '/home');
+
+        context.router.replaceAll([HomeRoute()]);
       } else {
         // Show error toast
         Fluttertoast.showToast(
@@ -75,7 +84,12 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Icon(Icons.arrow_back),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            context.router.push(HomeRoute());
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -125,6 +139,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 ? CircularProgressIndicator()
                 : ElevatedButton(
                     onPressed: _login,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFFA541B),
+                    ),
                     child: Text(
                       'Нэвтрэх',
                       style: TextStyle(color: Colors.white),
@@ -138,9 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {},
                   child: Text(
                     'Нууц үгээ мартсан уу?',
-                    style: TextStyle(
-                        color: AppTheme
-                            .primaryColor), // Use the primary color from AppTheme
+                    style: TextStyle(color: AppTheme.primaryColor),
                   ),
                 ),
                 TextButton(
@@ -177,7 +192,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 ElevatedButton.icon(
                   onPressed: () {},
-                  icon: Icon(Icons.facebook, color: Colors.white),
+                  icon: Icon(Icons.facebook_outlined, color: Colors.white),
                   label: Text('Facebook'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,

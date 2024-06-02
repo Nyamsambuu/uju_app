@@ -1,11 +1,15 @@
-// lib/main.dart
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uju_app/providers/app_provider.dart';
+import 'package:uju_app/providers/product_provider.dart';
 import 'package:uju_app/routes/app_router.dart';
-import 'theme/app_theme.dart';
+import 'package:uju_app/theme/app_theme.dart';
+import 'package:uju_app/routes/auth_guard.dart';
 
 void main() {
-  final appRouter = AppRouter();
+  final authGuard = AuthGuard();
+  final appRouter = AppRouter(authGuard);
+
   runApp(MyApp(appRouter: appRouter));
 }
 
@@ -16,67 +20,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      theme: AppTheme.lightTheme,
-      routerDelegate: appRouter.delegate(),
-      routeInformationParser: appRouter.defaultRouteParser(),
-    );
-  }
-}
-
-class MainPage extends StatefulWidget {
-  @override
-  _MainPageState createState() => _MainPageState();
-}
-
-class _MainPageState extends State<MainPage> {
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      switch (index) {
-        case 0:
-          context.router.replace(HomeRoute());
-          break;
-        case 1:
-          context.router.replace(SearchRoute());
-          break;
-        case 2:
-          context.router.replace(OrdersRoute());
-          break;
-        case 3:
-          context.router.replace(ProfileRoute());
-          break;
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: AutoRouter(),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Orders',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppProvider()),
+        ChangeNotifierProvider(create: (_) => ProductProvider()),
+      ],
+      child: Consumer<AppProvider>(
+        builder: (context, appProvider, _) {
+          return MaterialApp.router(
+            theme: AppTheme.lightTheme,
+            routerDelegate: appRouter.delegate(),
+            routeInformationParser: appRouter.defaultRouteParser(),
+          );
+        },
       ),
     );
   }

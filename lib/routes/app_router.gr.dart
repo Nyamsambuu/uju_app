@@ -21,6 +21,12 @@ abstract class _$AppRouter extends RootStackRouter {
         child: HomeScreen(),
       );
     },
+    LoginRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: LoginScreen(),
+      );
+    },
     MenuCategoriesRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -31,6 +37,13 @@ abstract class _$AppRouter extends RootStackRouter {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: OrdersPage(),
+      );
+    },
+    ProductDetailScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<ProductDetailScreenArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: ProductDetailScreen(productId: args.productId),
       );
     },
     ProfileRoute.name: (routeData) {
@@ -63,6 +76,20 @@ class HomeRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [LoginScreen]
+class LoginRoute extends PageRouteInfo<void> {
+  const LoginRoute({List<PageRouteInfo>? children})
+      : super(
+          LoginRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'LoginScreen';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
 /// [MenuCategories]
 class MenuCategoriesRoute extends PageRouteInfo<void> {
   const MenuCategoriesRoute({List<PageRouteInfo>? children})
@@ -88,6 +115,35 @@ class OrdersRoute extends PageRouteInfo<void> {
   static const String name = 'OrdersRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [ProductDetailScreen]
+class ProductDetailScreenRoute extends PageRouteInfo<ProductDetailScreenArgs> {
+  ProductDetailScreenRoute({
+    required int productId,
+    List<PageRouteInfo>? children,
+  }) : super(
+          ProductDetailScreenRoute.name,
+          args: ProductDetailScreenArgs(productId: productId),
+          initialChildren: children,
+        );
+
+  static const String name = 'ProductDetailScreen';
+
+  static const PageInfo<ProductDetailScreenArgs> page =
+      PageInfo<ProductDetailScreenArgs>(name);
+}
+
+class ProductDetailScreenArgs {
+  const ProductDetailScreenArgs({required this.productId});
+
+  final int productId;
+
+  @override
+  String toString() {
+    return 'ProductDetailScreenArgs{productId: $productId}';
+  }
 }
 
 /// generated route for

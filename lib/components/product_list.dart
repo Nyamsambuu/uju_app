@@ -1,5 +1,7 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:uju_app/routes/app_router.dart';
 import '../api/api_service.dart';
 import '../api/api_url.dart';
 
@@ -30,10 +32,8 @@ class ProductList extends StatelessWidget {
                     childAspectRatio: 0.65,
                   ),
                   itemCount: snapshot.data!.length,
-                  shrinkWrap:
-                      true, // Ensures the GridView takes up only the necessary space
-                  physics:
-                      NeverScrollableScrollPhysics(), // Prevents the GridView from scrolling
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     final product = snapshot.data![index];
                     final imageUrl = (product['images'] != null &&
@@ -44,9 +44,10 @@ class ProductList extends StatelessWidget {
                     final formattedPrice = NumberFormat("#,##0", "en_US")
                         .format(product['price']['calcprice']);
                     return ProductItem(
+                      id: product['id'],
                       imageUrl: imageUrl,
                       title: product['name'],
-                      price: '$formattedPrice₮',
+                      price: '$formattedPrice' + '₮',
                       rating: '${product['rating']}',
                       discount: product['discount'] != null
                           ? '${product['discount']}%'
@@ -66,6 +67,7 @@ class ProductList extends StatelessWidget {
 }
 
 class ProductItem extends StatelessWidget {
+  final int id;
   final String imageUrl;
   final String title;
   final String price;
@@ -75,6 +77,7 @@ class ProductItem extends StatelessWidget {
   final int? salecount;
 
   ProductItem({
+    required this.id,
     required this.imageUrl,
     required this.title,
     required this.price,
@@ -86,88 +89,95 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: 350, // Adjust the max height as needed
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(5.0),
-                  child: Container(
-                    height: 150,
-                    width: double.infinity,
-                    child: Image.network(
-                      imageUrl,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                if (discount != null)
-                  Positioned(
-                    top: 8,
-                    left: 8,
+    return GestureDetector(
+      onTap: () {
+        context.router.push(ProductDetailScreenRoute(productId: id));
+      },
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: 350,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(5.0),
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      color: Colors.red,
-                      child: Text(
-                        discount!,
-                        style: TextStyle(color: Colors.white, fontSize: 12),
+                      height: 150,
+                      width: double.infinity,
+                      child: Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
-                Positioned(
-                  bottom: 2,
-                  right: 0,
-                  child: Icon(Icons.bookmark_border, color: Colors.white),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.labelLarge,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            SizedBox(height: 2),
-            Text(
-              price,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            SizedBox(height: 2),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.bookmark_border, color: Colors.orange, size: 16),
-                    SizedBox(width: 4),
-                    Text(
-                      wishlistcount != null ? wishlistcount.toString() : '0',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                  if (discount != null)
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        color: Colors.red,
+                        child: Text(
+                          discount!,
+                          style: TextStyle(color: Colors.white, fontSize: 12),
+                        ),
+                      ),
                     ),
-                  ],
-                ),
-                SizedBox(width: 10),
-                Row(
-                  children: [
-                    Icon(Icons.sell_outlined, color: Colors.orange, size: 16),
-                    SizedBox(width: 2),
-                    Text(
-                      salecount != null ? salecount.toString() : '0',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                  Positioned(
+                    bottom: 2,
+                    right: 0,
+                    child: Icon(Icons.bookmark_border, color: Colors.white),
+                  ),
+                ],
+              ),
+              SizedBox(height: 8),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.labelLarge,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              SizedBox(height: 2),
+              Text(
+                price,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              SizedBox(height: 2),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.bookmark_border,
+                          color: Colors.orange, size: 16),
+                      SizedBox(width: 4),
+                      Text(
+                        wishlistcount != null ? wishlistcount.toString() : '0',
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                  SizedBox(width: 10),
+                  Row(
+                    children: [
+                      Icon(Icons.sell_outlined, color: Colors.orange, size: 16),
+                      SizedBox(width: 2),
+                      Text(
+                        salecount != null ? salecount.toString() : '0',
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

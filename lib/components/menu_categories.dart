@@ -1,6 +1,7 @@
 // lib/components/menu_categories.dart
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:uju_app/routes/app_router.dart';
 import '../api/api_service.dart';
 import '../api/api_url.dart';
 
@@ -16,7 +17,7 @@ class MenuCategories extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            context.router.pop();
+            context.router.push(HomeRoute());
           },
         ),
       ),

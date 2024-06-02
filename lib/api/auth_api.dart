@@ -5,7 +5,7 @@ class AuthApi {
   final ApiService apiService = ApiService();
 
   Future<Map<String, dynamic>> login(String username, String password) async {
-    final response = await apiService.postRequest('Systems/login', {
+    final response = await apiService.postRequest('/api/Systems/login', {
       'username': username,
       'password': password,
     });

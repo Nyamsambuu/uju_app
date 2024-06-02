@@ -1,10 +1,15 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uju_app/providers/app_provider.dart';
 import 'package:uju_app/routes/app_router.dart';
+import 'package:badges/badges.dart' as badges;
 
 class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final appProvider = Provider.of<AppProvider>(context);
+
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
@@ -43,13 +48,27 @@ class Header extends StatelessWidget {
         ],
       ),
       actions: [
-        IconButton(
-          icon: Icon(Icons.bookmark_border, color: Colors.black),
-          onPressed: () {},
+        badges.Badge(
+          position: badges.BadgePosition.topEnd(top: 0, end: 3),
+          badgeContent: Text(
+            appProvider.favoriteItems.length.toString(),
+            style: TextStyle(color: Colors.white),
+          ),
+          child: IconButton(
+            icon: Icon(Icons.bookmark_border, color: Colors.black),
+            onPressed: () {},
+          ),
         ),
-        IconButton(
-          icon: Icon(Icons.shopping_cart, color: Colors.black),
-          onPressed: () {},
+        badges.Badge(
+          position: badges.BadgePosition.topEnd(top: 0, end: 3),
+          badgeContent: Text(
+            appProvider.shoppingCart.length.toString(),
+            style: TextStyle(color: Colors.white),
+          ),
+          child: IconButton(
+            icon: Icon(Icons.shopping_cart, color: Colors.black),
+            onPressed: () {},
+          ),
         ),
       ],
     );
