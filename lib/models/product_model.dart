@@ -4,6 +4,7 @@ class ProductModel {
   final List<String> productImages;
   final List<String> bodyImages;
   final int price;
+  final int? calcprice;
   final int discount;
   final int delivery;
   final String categoryname;
@@ -20,6 +21,7 @@ class ProductModel {
     required this.productImages,
     required this.bodyImages,
     required this.price,
+    this.calcprice,
     required this.discount,
     required this.delivery,
     required this.categoryname,
@@ -53,6 +55,7 @@ class ProductModel {
       name: retdata['name'] ?? '',
       productImages: productImages,
       bodyImages: bodyImages,
+      calcprice: (priceData['price'] ?? 0).toInt(),
       price: (priceData['calcprice'] ?? 0).toInt(),
       discount: (priceData['discount'] ?? 0).toInt(),
       delivery: retdata['delivery'] ?? 0,

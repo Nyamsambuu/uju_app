@@ -1,6 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:uju_app/api/api_url.dart';
 import 'package:uju_app/providers/product_provider.dart';
 import 'package:uju_app/widgets/slider_widget.dart';
 
@@ -39,6 +41,9 @@ class ProductDetailScreen extends StatelessWidget {
           }
 
           final product = provider.product!;
+          final formattedPrice = NumberFormat("#,###").format(product.price);
+          final formattedCalcPrice =
+              NumberFormat("#,###").format(product.calcprice);
 
           return SingleChildScrollView(
             child: Column(
@@ -54,52 +59,71 @@ class ProductDetailScreen extends StatelessWidget {
                     children: [
                       Text(
                         product.categoryname.toUpperCase(),
-                        style: Theme.of(context).textTheme.labelMedium,
+                        style: Theme.of(context).textTheme.labelSmall,
                       ),
                       SizedBox(height: 4.0),
-                      Text(
-                        product.name,
-                        style: Theme.of(context).textTheme.titleLarge,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              product.name,
+                              style: Theme.of(context).textTheme.titleLarge,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.share_outlined),
+                            onPressed: () {
+                              ('$getBaseURL()/product/${product.id}');
+                            },
+                          ),
+                        ],
                       ),
                       SizedBox(height: 4.0),
 
                       // Valuation Rating
                       Row(
                         children: [
-                          Icon(Icons.star, color: Colors.orange, size: 24.0),
+                          Row(
+                            children: List.generate(5, (index) {
+                              return Icon(Icons.star,
+                                  color: Colors.orange, size: 14.0);
+                            }),
+                          ),
                           SizedBox(width: 4.0),
                           Text(
-                            '${product.valuationdundaj ?? 0.0} (${product.valuationdundaj})',
-                            style: Theme.of(context).textTheme.bodyMedium,
+                            '(${(product.salecount)})',
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ],
                       ),
                       SizedBox(height: 4.0),
 
-                      // Product Price and Discount
-                      Text(
-                        '₮${product.price}',
-                        style: Theme.of(context).textTheme.headlineMedium,
-                      ),
                       if (product.discount > 0)
                         Row(
                           children: [
                             Text(
-                              '₮${product.price + product.discount}',
-                              style: TextStyle(
-                                fontSize: 18,
-                                decoration: TextDecoration.lineThrough,
-                              ),
+                              '${product.discount}%',
+                              style: Theme.of(context).textTheme.labelLarge,
                             ),
                             SizedBox(width: 8.0),
                             Text(
-                              '${product.discount}% OFF',
-                              style: TextStyle(fontSize: 18, color: Colors.red),
+                              '${formattedCalcPrice}₮',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
                             ),
                           ],
                         ),
+                      // Product Price and Discount
+                      Text(
+                        '${formattedPrice}₮',
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
 
                       // Body Images without left and right padding
                       if (product.bodyImages.isNotEmpty)
