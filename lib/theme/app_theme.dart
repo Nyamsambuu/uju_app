@@ -119,13 +119,13 @@ class AppTheme {
       ),
       labelLarge: TextStyle(
         fontSize: 14.0,
-        fontWeight: FontWeight.w300,
+        fontWeight: FontWeight.normal,
         fontFamily: 'NotoSans',
         letterSpacing: 0.1,
         color: textPrimaryColor,
       ),
       labelMedium: TextStyle(
-        fontSize: 12.0,
+        fontSize: 11.0,
         fontFamily: 'NotoSans',
         letterSpacing: 0.1,
         color: textSecondaryColor,

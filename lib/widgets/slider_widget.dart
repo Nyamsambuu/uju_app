@@ -36,7 +36,7 @@ class _SliderWidgetState extends State<SliderWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 300,
+      height: 350,
       width: MediaQuery.of(context).size.width,
       child: Stack(
         alignment: Alignment.bottomCenter,
@@ -64,7 +64,8 @@ class _SliderWidgetState extends State<SliderWidget> {
               ),
               child: Text(
                 '${_currentPage + 1}/${widget.imageIds.length}',
-                style: TextStyle(color: Colors.white),
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
           ),
