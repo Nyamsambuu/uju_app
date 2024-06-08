@@ -103,4 +103,14 @@ class ApiService {
       throw Exception('Failed to product item');
     }
   }
+
+  Future<dynamic> getReviews(int itemId) async {
+    final response = await http.get(
+        Uri.parse('$baseUrl/api/Product/get_valuation_list?itemid=$itemId'));
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load reviews');
+    }
+  }
 }

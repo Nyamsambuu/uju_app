@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uju_app/providers/app_provider.dart';
 import 'package:uju_app/providers/product_provider.dart';
 import 'package:uju_app/widgets/product_detail_appbar.dart';
 import 'package:uju_app/widgets/product_detail_body.dart';
@@ -30,7 +31,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   void _scrollToContainer(GlobalKey key,
       {double offset = 0.0, double topOffset = 0.0}) {
-    // Adding a delay to ensure context is available
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (key.currentContext != null) {
         final RenderBox renderBox =
@@ -73,6 +73,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ProductProvider>(context, listen: false)
           .fetchProduct(widget.productId);
+      Provider.of<AppProvider>(context, listen: false)
+          .fetchReviews(widget.productId);
     });
   }
 
@@ -122,98 +124,104 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: ProductDetailAppBar(),
-      body: Consumer<ProductProvider>(
-        builder: (context, provider, child) {
-          if (provider.loading) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (provider.product == null) {
-            return Center(child: Text('Failed to load product'));
-          }
+      body: Consumer<AppProvider>(
+        builder: (context, appProvider, child) {
+          return Consumer<ProductProvider>(
+            builder: (context, productProvider, child) {
+              if (productProvider.loading || appProvider.loading) {
+                return Center(child: CircularProgressIndicator());
+              }
+              if (productProvider.product == null) {
+                return Center(child: Text('Failed to load product'));
+              }
 
-          return CustomScrollView(
-            controller: _scrollController,
-            slivers: [
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    ProductDetailBody(product: provider.product!),
-                    Divider(
-                      color: Colors.grey,
-                      thickness: 0.1,
-                    ),
-                    ProductDetailDelivery(product: provider.product!),
-                    Divider(
-                      color: Color(0xFFF3F2F0),
-                      thickness: 10,
-                    ),
-                  ],
-                ),
-              ),
-              SliverPersistentHeader(
-                pinned: true,
-                delegate: _SliverAppBarDelegate(
-                  child: Container(
-                    color: Colors.white,
-                    child: ProductDetailInfo(
-                      product: provider.product!,
-                      currentSection: _currentSection,
-                      scrollToContainers: {
-                        'Барааны мэдээлэл': () =>
-                            _handleTabSelection('Барааны мэдээлэл'),
-                        'Хэрэглэгчийн үнэлгээ': () =>
-                            _handleTabSelection('Хэрэглэгчийн үнэлгээ'),
-                        'Хүргэлт / Буцаан олголт': () =>
-                            _handleTabSelection('Хүргэлт / Буцаан олголт'),
-                        'Санал болгох бараа': () =>
-                            _handleTabSelection('Санал болгох бараа'),
-                      },
+              return CustomScrollView(
+                controller: _scrollController,
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        ProductDetailBody(product: productProvider.product!),
+                        Divider(
+                          color: Colors.grey,
+                          thickness: 0.1,
+                        ),
+                        ProductDetailDelivery(
+                            product: productProvider.product!),
+                        Divider(
+                          color: Color(0xFFF3F2F0),
+                          thickness: 10,
+                        ),
+                      ],
                     ),
                   ),
-                  onTabSelected: _setActiveTab,
-                ),
-              ),
-              SliverList(
-                delegate: SliverChildListDelegate(
-                  [
-                    Container(
-                      key: container1Key,
-                      width: double.infinity,
-                      color: Colors.white,
-                      child:
-                          ProductInfo(bodyImages: provider.product!.bodyImages),
-                    ),
-                    SizedBox(height: 16),
-                    Container(
-                      key: container2Key,
-                      height: 1000.0,
-                      width: double.infinity,
-                      color: Colors.white,
-                      child: Review(),
-                    ),
-                    SizedBox(height: 16),
-                    Container(
-                      key: container3Key,
-                      height: 1000.0,
-                      width: double.infinity,
-                      color: Colors.green,
-                      child: Center(
-                        child: Text('Container 3'),
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: _SliverAppBarDelegate(
+                      child: Container(
+                        color: Colors.white,
+                        child: ProductDetailInfo(
+                          product: productProvider.product!,
+                          currentSection: _currentSection,
+                          scrollToContainers: {
+                            'Барааны мэдээлэл': () =>
+                                _handleTabSelection('Барааны мэдээлэл'),
+                            'Хэрэглэгчийн үнэлгээ': () =>
+                                _handleTabSelection('Хэрэглэгчийн үнэлгээ'),
+                            'Хүргэлт / Буцаан олголт': () =>
+                                _handleTabSelection('Хүргэлт / Буцаан олголт'),
+                            'Санал болгох бараа': () =>
+                                _handleTabSelection('Санал болгох бараа'),
+                          },
+                        ),
                       ),
+                      onTabSelected: _setActiveTab,
                     ),
-                    Container(
-                      key: container4Key,
-                      height: 1000.0,
-                      width: double.infinity,
-                      color: Colors.yellow,
-                      child: Center(
-                        child: Text('Container 4'),
-                      ),
+                  ),
+                  SliverList(
+                    delegate: SliverChildListDelegate(
+                      [
+                        Container(
+                          key: container1Key,
+                          width: double.infinity,
+                          color: Colors.white,
+                          child: ProductInfo(
+                              bodyImages: productProvider.product!.bodyImages),
+                        ),
+                        SizedBox(height: 16),
+                        Container(
+                          key: container2Key,
+                          width: double.infinity,
+                          color: Colors.white,
+                          child: Review(
+                              product: productProvider
+                                  .product!), // Pass product here
+                        ),
+                        SizedBox(height: 16),
+                        Container(
+                          key: container3Key,
+                          height: 1000.0,
+                          width: double.infinity,
+                          color: Colors.green,
+                          child: Center(
+                            child: Text('Container 3'),
+                          ),
+                        ),
+                        Container(
+                          key: container4Key,
+                          height: 1000.0,
+                          width: double.infinity,
+                          color: Colors.yellow,
+                          child: Center(
+                            child: Text('Container 4'),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            ],
+                  ),
+                ],
+              );
+            },
           );
         },
       ),

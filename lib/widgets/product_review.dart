@@ -1,167 +1,162 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:uju_app/models/product_model.dart';
+import 'package:uju_app/theme/app_theme.dart';
 
 class Review extends StatelessWidget {
+  final ProductModel product;
+
+  Review({required this.product});
+
   @override
   Widget build(BuildContext context) {
+    // Default valuationtoo values to 0 if not provided
+    Map<int, int> valuationMap = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+    for (var valToo in product.valuationtoo) {
+      valuationMap[valToo.rate] = valToo.too;
+    }
+
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              Text(
-                '리뷰 2',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
+              Text('Үнэлгээ'.toUpperCase(),
+                  style: Theme.of(context).textTheme.titleLarge),
               Spacer(),
               Text(
-                '리뷰쓰기',
+                'ҮНЭЛГЭЭ ӨГӨХ',
                 style: TextStyle(
-                  color: Colors.blue,
-                ),
+                    color: AppTheme.ujuColor, fontWeight: FontWeight.w400),
               ),
             ],
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: Column(
-                  children: [
-                    Text(
-                      '5.0',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppTheme.bgColor,
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    child: Column(
+                      children: [
+                        Text(product.valuationdundaj.toString(),
+                            style: Theme.of(context).textTheme.headlineLarge),
+                        Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment.center, // Center the stars
+                          children: List.generate(5, (index) {
+                            return Icon(
+                              Icons.star,
+                              color: AppTheme.ujuColor,
+                              size: 16,
+                            );
+                          }),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        children: [5, 4, 3, 2, 1].map((rate) {
+                          int too = valuationMap[rate] ?? 0;
+                          return Row(
+                            children: [
+                              Text('$rate оноо'),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: LinearProgressIndicator(
+                                  value: too /
+                                      10.0, // Adjust the value range as needed
+                                  backgroundColor: Colors.grey[300],
+                                  color: AppTheme.ujuColor,
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              Text('$too'),
+                            ],
+                          );
+                        }).toList(),
                       ),
                     ),
-                    Icon(
-                      Icons.star,
-                      color: Colors.blue,
-                      size: 24,
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              SizedBox(width: 16),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
+            ),
+          ),
+        ),
+        Divider(
+          thickness: 0.3,
+        ),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: product.valuation.length,
+          itemBuilder: (context, index) {
+            final review = product.valuation[index];
+            final formattedDate =
+                DateFormat('yyyy/MM/dd HH:mm').format(review.updated);
+
+            // Generate stars based on the rating
+            List<Widget> stars = List.generate(5, (i) {
+              if (i < review.rate) {
+                return Icon(Icons.star, color: AppTheme.ujuColor, size: 16);
+              } else {
+                return Icon(Icons.star, color: Colors.grey, size: 16);
+              }
+            });
+
+            return Column(
+              children: [
+                ListTile(
+                  leading: CircleAvatar(
+                    radius: 15,
+                    backgroundColor: AppTheme
+                        .ujuColor, // Replace with desired background color
+                    child: Text(
+                      review.username[0]
+                          .toUpperCase(), // Use the first letter of the username
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  title: Row(
+                    children: [
+                      Text(review.username,
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Text('5 оноо'),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: LinearProgressIndicator(
-                              value: 1.0,
-                              backgroundColor: Colors.grey[300],
-                              color: Colors.blue,
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Text('2'),
+                          ...stars,
+                          SizedBox(width: 5),
+                          Text('$formattedDate'),
                         ],
                       ),
-                      Row(
-                        children: [
-                          Text('4 оноо'),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: LinearProgressIndicator(
-                              value: 0.0,
-                              backgroundColor: Colors.grey[300],
-                              color: Colors.blue,
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Text('0'),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text('3 оноо'),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: LinearProgressIndicator(
-                              value: 0.0,
-                              backgroundColor: Colors.grey[300],
-                              color: Colors.blue,
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Text('0'),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text('2 оноо'),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: LinearProgressIndicator(
-                              value: 0.0,
-                              backgroundColor: Colors.grey[300],
-                              color: Colors.blue,
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Text('0'),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text('1 оноо'),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: LinearProgressIndicator(
-                              value: 0.0,
-                              backgroundColor: Colors.grey[300],
-                              color: Colors.blue,
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Text('0'),
-                        ],
-                      ),
+                      SizedBox(height: 4),
+                      Text('${review.comment}'),
                     ],
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
-        Divider(),
-        ListTile(
-          leading: Image.network('https://via.placeholder.com/100'),
-          title: Text('초록좋아다'),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('2023.08.01 • 오늘의집 구매'),
-              Text('색상: 핑크 / 사이즈: 100x150cm'),
-              Text('생각보다 색이 좀 진하긴한데 이쁘네요'),
-            ],
-          ),
-        ),
-        Divider(),
-        ListTile(
-          leading: Image.network('https://via.placeholder.com/100'),
-          title: Text('푸르미세상에서제일귀여워'),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('2023.03.18 • 오늘의집 구매'),
-              Text('6달 사용기'),
-              Text('작은방 햇빛가리개로 샀는데 흰색보다 회색이 더 질이 좋아보여요'),
-            ],
-          ),
+                Divider(
+                  thickness: 0.3,
+                ),
+              ],
+            );
+          },
         ),
       ],
     );

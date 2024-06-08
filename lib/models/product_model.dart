@@ -1,16 +1,37 @@
+import 'package:uju_app/models/product_valuation.dart';
+
+class ValuationToo {
+  final int rate;
+  final int too;
+
+  ValuationToo({
+    required this.rate,
+    required this.too,
+  });
+
+  factory ValuationToo.fromJson(Map<String, dynamic> json) {
+    return ValuationToo(
+      rate: (json['rate'] as num).toInt(),
+      too: (json['too'] as num).toInt(),
+    );
+  }
+}
+
 class ProductModel {
   final int id;
   final String name;
   final List<String> productImages;
   final List<String> bodyImages;
+  final List<Valuation> valuation;
+  final List<ValuationToo> valuationtoo;
   final int price;
   final int? calcprice;
   final int discount;
   final int delivery;
   final String categoryname;
-  final double? valuationdundaj; // Changed to double? for nullable double
+  final double? valuationdundaj;
   final int wishlistcount;
-  final String? brandname; // nullable string
+  final String? brandname;
   final String descbody;
   final String barcode;
   final int salecount;
@@ -20,6 +41,8 @@ class ProductModel {
     required this.name,
     required this.productImages,
     required this.bodyImages,
+    required this.valuation,
+    required this.valuationtoo,
     required this.price,
     this.calcprice,
     required this.discount,
@@ -39,6 +62,8 @@ class ProductModel {
 
     List<String> productImages = [];
     List<String> bodyImages = [];
+    List<Valuation> valuations = [];
+    List<ValuationToo> valuationtoos = [];
 
     if (retdata['images'] != null) {
       for (var image in retdata['images']) {
@@ -50,24 +75,38 @@ class ProductModel {
       }
     }
 
+    if (retdata['valuation'] != null) {
+      for (var val in retdata['valuation']) {
+        valuations.add(Valuation.fromJson(val));
+      }
+    }
+
+    if (retdata['valuationtoo'] != null) {
+      for (var valToo in retdata['valuationtoo']) {
+        valuationtoos.add(ValuationToo.fromJson(valToo));
+      }
+    }
+
     return ProductModel(
-      id: retdata['id'] ?? 0,
+      id: (retdata['id'] as num).toInt(),
       name: retdata['name'] ?? '',
       productImages: productImages,
       bodyImages: bodyImages,
-      calcprice: (priceData['price'] ?? 0).toInt(),
-      price: (priceData['calcprice'] ?? 0).toInt(),
+      valuation: valuations,
+      valuationtoo: valuationtoos,
+      calcprice: (priceData['calcprice'] ?? 0).toInt(),
+      price: (priceData['price'] ?? 0).toInt(),
       discount: (priceData['discount'] ?? 0).toInt(),
-      delivery: retdata['delivery'] ?? 0,
+      delivery: (retdata['delivery'] ?? 0).toInt(),
       categoryname: retdata['categoryname'] ?? '',
       valuationdundaj: retdata['valuationdundaj'] != null
           ? (retdata['valuationdundaj'] as num).toDouble()
-          : null,
-      wishlistcount: retdata['wishlistcount'] ?? 0,
+          : 5,
+      wishlistcount: (retdata['wishlistcount'] ?? 0).toInt(),
       brandname: retdata['brandname'],
       descbody: retdata['descbody'] ?? '',
       barcode: retdata['barcode'] ?? '',
-      salecount: retdata['salecount'] ?? 0,
+      salecount: (retdata['salecount'] ?? 0).toInt(),
     );
   }
 }

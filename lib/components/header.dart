@@ -48,28 +48,40 @@ class Header extends StatelessWidget {
         ],
       ),
       actions: [
-        badges.Badge(
-          position: badges.BadgePosition.topEnd(top: 0, end: 3),
-          badgeContent: Text(
-            appProvider.favoriteItems.length.toString(),
-            style: TextStyle(color: Colors.white),
-          ),
-          child: IconButton(
-            icon: Icon(Icons.bookmark_border, color: Colors.black),
-            onPressed: () {},
-          ),
-        ),
-        badges.Badge(
-          position: badges.BadgePosition.topEnd(top: 0, end: 3),
-          badgeContent: Text(
-            appProvider.shoppingCart.length.toString(),
-            style: TextStyle(color: Colors.white),
-          ),
-          child: IconButton(
-            icon: Icon(Icons.shopping_cart, color: Colors.black),
-            onPressed: () {},
-          ),
-        ),
+        appProvider.favoriteItems.length != 0
+            ? badges.Badge(
+                position: badges.BadgePosition.topEnd(top: 0, end: 3),
+                badgeContent: Text(
+                  appProvider.favoriteItems.length.toString(),
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.bookmark_border, color: Colors.black),
+                  onPressed: () {},
+                ),
+              )
+            : IconButton(
+                icon: Icon(Icons.bookmark_border, color: Colors.black),
+                onPressed: () {},
+              ),
+        appProvider.shoppingCart.length != 0
+            ? badges.Badge(
+                position: badges.BadgePosition.topEnd(top: 0, end: 3),
+                badgeContent: Text(
+                  appProvider.shoppingCart.length.toString(),
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.shopping_cart, color: Colors.black),
+                  onPressed: () {},
+                ),
+              )
+            : IconButton(
+                icon: Icon(Icons.shopping_cart, color: Colors.black),
+                onPressed: () {},
+              )
       ],
     );
   }

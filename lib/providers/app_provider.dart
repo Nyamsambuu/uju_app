@@ -8,6 +8,7 @@ class AppProvider with ChangeNotifier {
   UserModel _userModel = UserModel(userid: '', userImage: '', userpoint: 0);
   List<dynamic> _shoppingCart = [];
   List<dynamic> _favoriteItems = [];
+  List<dynamic> _reviews = [];
   bool _loading = false;
   bool _saving = false;
   bool _finished = false;
@@ -28,6 +29,7 @@ class AppProvider with ChangeNotifier {
   UserModel get userModel => _userModel;
   List<dynamic> get shoppingCart => _shoppingCart;
   List<dynamic> get favoriteItems => _favoriteItems;
+  List<dynamic> get reviews => _reviews;
   bool get loading => _loading;
   bool get saving => _saving;
   bool get finished => _finished;
@@ -109,6 +111,22 @@ class AppProvider with ChangeNotifier {
         notifyListeners();
       }
     }
+  }
+
+  Future<void> fetchReviews(int itemId) async {
+    _loading = true;
+    notifyListeners();
+    try {
+      final res = await _apiService.getReviews(itemId);
+      if (res['retdata'] != null) {
+        _reviews = res['retdata'];
+      }
+      _loading = false;
+    } catch (error) {
+      _error = error.toString();
+      _loading = false;
+    }
+    notifyListeners();
   }
 
   Future<void> login(String token) async {
