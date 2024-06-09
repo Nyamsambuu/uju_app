@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:uju_app/api/api_url.dart';
 import 'package:uju_app/models/product_model.dart';
 import 'package:uju_app/theme/app_theme.dart';
 
@@ -7,6 +8,121 @@ class Review extends StatelessWidget {
   final ProductModel product;
 
   Review({required this.product});
+
+  void _showReviewSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.9,
+          child: Container(
+            color: Colors.white,
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    Spacer(),
+                    Text(
+                      'ҮНЭЛГЭЭ ӨГӨХ',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    Spacer(flex: 2),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(right: 10.0),
+                        child: product.productImages.isNotEmpty &&
+                                product.productImages[0] != null
+                            ? Image.network(
+                                '${getBaseURL()}/api/file/download?ID=${product.productImages[0]}',
+                                fit: BoxFit.cover,
+                                width: 50,
+                                height: 50,
+                              )
+                            : Image.asset(
+                                'assets/placeholder.png', // Path to your placeholder image
+                                fit: BoxFit.cover,
+                                width: 50,
+                                height: 50,
+                              ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              product.name,
+                              style: Theme.of(context).textTheme.labelLarge,
+                            ),
+                            Text('250P оноо /зураг хавсаргавал/',
+                                style: Theme.of(context).textTheme.labelSmall),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 16),
+                Text('Үнэлгээний оноо'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(5, (index) {
+                    return IconButton(
+                      icon: Icon(Icons.star_border),
+                      onPressed: () {},
+                    );
+                  }),
+                ),
+                SizedBox(height: 16),
+                Text('Зураг хавсаргах /заавал биш/'),
+                ElevatedButton.icon(
+                  onPressed: () {},
+                  icon: Icon(Icons.add_a_photo),
+                  label: Text('Зураг хавсаргах'),
+                ),
+                SizedBox(height: 16),
+                Text('Сэтгэгдэл'),
+                TextField(
+                  maxLines: 5,
+                  decoration: InputDecoration(
+                    hintText:
+                        'Энэ бүтээгдэхүүнийг хэрэглэх явцад ямар давуу болон сул талуудыг мэдэрсэн талаар илэн далангүй бичээрэй.',
+                    border: OutlineInputBorder(),
+                    hintStyle: TextStyle(
+                        color: AppTheme.textSecondaryColor,
+                        fontWeight: FontWeight.w300),
+                  ),
+                ),
+                Spacer(),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Text('리뷰 등록'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.ujuColor,
+                    minimumSize: Size(double.infinity, 36),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +138,29 @@ class Review extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              Text('Үнэлгээ'.toUpperCase(),
-                  style: Theme.of(context).textTheme.titleLarge),
+              RichText(
+                text: TextSpan(
+                  style: Theme.of(context).textTheme.titleLarge,
+                  children: [
+                    TextSpan(text: 'Үнэлгээ '.toUpperCase()),
+                    TextSpan(
+                      text: '(${product.valuationtoo.length})'.toUpperCase(),
+                      style: TextStyle(color: AppTheme.ujuColor).copyWith(
+                          fontWeight:
+                              FontWeight.bold), // Set the desired color here
+                    ),
+                    TextSpan(text: ' '),
+                  ],
+                ),
+              ),
               Spacer(),
-              Text(
-                'ҮНЭЛГЭЭ ӨГӨХ',
-                style: TextStyle(
-                    color: AppTheme.ujuColor, fontWeight: FontWeight.w400),
+              GestureDetector(
+                onTap: () => _showReviewSheet(context),
+                child: Text(
+                  'ҮНЭЛГЭЭ ӨГӨХ',
+                  style: TextStyle(
+                      color: AppTheme.ujuColor, fontWeight: FontWeight.w400),
+                ),
               ),
             ],
           ),
