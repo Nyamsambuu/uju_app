@@ -41,8 +41,8 @@ class HomeScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text('Эрэлттэй Бараа'.toUpperCase(),
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold)),
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall),
                             TextButton(
                               onPressed: () {},
                               child: Row(

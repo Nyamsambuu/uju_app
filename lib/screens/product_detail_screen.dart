@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uju_app/providers/app_provider.dart';
 import 'package:uju_app/providers/product_provider.dart';
+import 'package:uju_app/widgets/ProductOptionsBottomSheet.dart';
 import 'package:uju_app/widgets/product_detail_appbar.dart';
 import 'package:uju_app/widgets/product_detail_body.dart';
 import 'package:uju_app/widgets/product_detail_delivery.dart';
 import 'package:uju_app/widgets/product_detail_info.dart';
 import 'package:uju_app/widgets/product_info.dart';
+import 'package:uju_app/widgets/product_return_policy.dart';
 import 'package:uju_app/widgets/product_review.dart';
 
 @RoutePage()
@@ -189,6 +191,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               bodyImages: productProvider.product!.bodyImages),
                         ),
                         SizedBox(height: 16),
+                        Divider(
+                          color: Color(0xFFF3F2F0),
+                          thickness: 10,
+                        ),
                         Container(
                           key: container2Key,
                           width: double.infinity,
@@ -198,14 +204,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   .product!), // Pass product here
                         ),
                         SizedBox(height: 16),
+                        Divider(
+                          color: Color(0xFFF3F2F0),
+                          thickness: 10,
+                        ),
                         Container(
                           key: container3Key,
-                          height: 1000.0,
                           width: double.infinity,
                           color: Colors.green,
-                          child: Center(
-                            child: Text('Container 3'),
-                          ),
+                          child: ProductReturnPolicy(),
+                        ),
+                        Divider(
+                          color: Color(0xFFF3F2F0),
+                          thickness: 10,
                         ),
                         Container(
                           key: container4Key,
@@ -244,7 +255,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   ),
                   onPressed: () {
-                    // Handle purchase button press
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (context) => ProductOptionsBottomSheet(
+                          productId: widget.productId),
+                    );
                   },
                   child: Text(
                     'Худалдаж авах',

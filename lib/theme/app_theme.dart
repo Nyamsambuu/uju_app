@@ -79,7 +79,7 @@ class AppTheme {
         color: textPrimaryColor,
       ),
       headlineSmall: TextStyle(
-        fontSize: 20.0,
+        fontSize: 18.0,
         fontWeight: FontWeight.bold,
         fontFamily: 'NotoSans',
         letterSpacing: 0.1,
@@ -87,14 +87,14 @@ class AppTheme {
       ),
       titleLarge: TextStyle(
         fontSize: 16.0,
-        fontWeight: FontWeight.w400,
+        fontWeight: FontWeight.w500,
         fontFamily: 'NotoSans',
         letterSpacing: 0.1,
         color: textPrimaryColor,
       ),
       titleMedium: TextStyle(
         fontSize: 14.0,
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w400,
         fontFamily: 'NotoSans',
         letterSpacing: 0.1,
         color: textPrimaryColor,
@@ -106,11 +106,12 @@ class AppTheme {
         color: textPrimaryColor,
       ),
       bodyMedium: TextStyle(
+        //default font
         fontSize: 14.0,
         fontFamily: 'NotoSans',
-        letterSpacing: 0.3,
-        color: textSecondaryColor,
-        fontWeight: FontWeight.w300,
+        letterSpacing: 0.1,
+        color: textPrimaryColor,
+        fontWeight: FontWeight.w400,
       ),
       bodySmall: TextStyle(
         fontSize: 12.0,

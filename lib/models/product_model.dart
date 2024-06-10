@@ -1,3 +1,4 @@
+import 'package:uju_app/models/product_child.dart';
 import 'package:uju_app/models/product_valuation.dart';
 
 class ValuationToo {
@@ -22,6 +23,7 @@ class ProductModel {
   final String name;
   final List<String> productImages;
   final List<String> bodyImages;
+  final List<ProductChild> children;
   final List<Valuation> valuation;
   final List<ValuationToo> valuationtoo;
   final int price;
@@ -43,6 +45,7 @@ class ProductModel {
     required this.bodyImages,
     required this.valuation,
     required this.valuationtoo,
+    required this.children,
     required this.price,
     this.calcprice,
     required this.discount,
@@ -62,6 +65,7 @@ class ProductModel {
 
     List<String> productImages = [];
     List<String> bodyImages = [];
+    List<ProductChild> childrens = [];
     List<Valuation> valuations = [];
     List<ValuationToo> valuationtoos = [];
 
@@ -87,12 +91,19 @@ class ProductModel {
       }
     }
 
+    if (retdata['children'] != null) {
+      for (var child in retdata['children']) {
+        childrens.add(ProductChild.fromJson(child));
+      }
+    }
+
     return ProductModel(
       id: (retdata['id'] as num).toInt(),
       name: retdata['name'] ?? '',
       productImages: productImages,
       bodyImages: bodyImages,
       valuation: valuations,
+      children: childrens,
       valuationtoo: valuationtoos,
       calcprice: (priceData['calcprice'] ?? 0).toInt(),
       price: (priceData['price'] ?? 0).toInt(),

@@ -38,11 +38,7 @@ class MenuCategories extends StatelessWidget {
                   children: [
                     Text(
                       'Сүүлийн хайлт'.toUpperCase(),
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Roboto',
-                          fontSize: 16,
-                          letterSpacing: 0.3),
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                     SizedBox(height: 10),
                     Row(
@@ -70,11 +66,7 @@ class MenuCategories extends StatelessWidget {
                     SizedBox(height: 20),
                     Text(
                       'БАРААНЫ АНГИЛАЛ'.toUpperCase(),
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          fontFamily: 'Roboto',
-                          letterSpacing: 0.3),
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                     SizedBox(height: 10),
                     GridView.count(
@@ -101,11 +93,7 @@ class MenuCategories extends StatelessWidget {
                                 category['name'].toString(),
                                 textAlign: TextAlign.center,
                                 softWrap: true,
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                    fontFamily: 'Roboto',
-                                    letterSpacing: 0.1),
+                                style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ],
                           );
@@ -163,7 +151,7 @@ class MenuCategories extends StatelessWidget {
                               crossAxisCount: 4,
                               crossAxisSpacing: 8.0,
                               mainAxisSpacing: 8.0,
-                              childAspectRatio: 0.8,
+                              childAspectRatio: 0.1,
                             ),
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
@@ -191,17 +179,13 @@ class MenuCategories extends StatelessWidget {
                                           ), // Placeholder size if no image
                                   ),
                                   SizedBox(height: 4),
-                                  Text(
-                                    tag['name'],
-                                    textAlign: TextAlign.center,
-                                    overflow: TextOverflow.visible,
-                                    softWrap: true,
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400,
-                                        fontFamily: 'Roboto',
-                                        letterSpacing: 0.1),
-                                  ),
+                                  Text(tag['name'],
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.visible,
+                                      softWrap: true,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium),
                                 ],
                               );
                             },

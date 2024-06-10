@@ -74,12 +74,12 @@ class Header extends StatelessWidget {
                       color: Colors.white, fontWeight: FontWeight.bold),
                 ),
                 child: IconButton(
-                  icon: Icon(Icons.shopping_cart, color: Colors.black),
+                  icon: Icon(Icons.shopping_cart_outlined, color: Colors.black),
                   onPressed: () {},
                 ),
               )
             : IconButton(
-                icon: Icon(Icons.shopping_cart, color: Colors.black),
+                icon: Icon(Icons.shopping_cart_outlined, color: Colors.black),
                 onPressed: () {},
               )
       ],

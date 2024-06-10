@@ -30,7 +30,7 @@ class ProductDetailAppBar extends StatelessWidget
           },
         ),
         IconButton(
-          icon: Icon(Icons.shopping_cart),
+          icon: Icon(Icons.shopping_cart_outlined),
           onPressed: () {
             // Handle shopping cart button press
           },

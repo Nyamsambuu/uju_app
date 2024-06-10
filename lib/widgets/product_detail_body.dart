@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:uju_app/api/api_url.dart';
 import 'package:uju_app/models/product_model.dart';
+import 'package:uju_app/theme/app_theme.dart';
 import 'package:uju_app/widgets/slider_widget.dart';
 
 class ProductDetailBody extends StatelessWidget {
@@ -62,7 +63,7 @@ class ProductDetailBody extends StatelessWidget {
                     ),
                     SizedBox(width: 4.0),
                     Text(
-                      '(${(product.salecount)})',
+                      '(${product.valuationdundaj?.toStringAsFixed(1)})',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
@@ -74,20 +75,21 @@ class ProductDetailBody extends StatelessWidget {
                     children: [
                       Text(
                         '${product.discount}%',
-                        style: Theme.of(context).textTheme.labelLarge,
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            color: AppTheme.ujuColor,
+                            fontWeight: FontWeight.bold),
                       ),
                       SizedBox(width: 8.0),
                       Text(
-                        '${formattedCalcPrice}₮',
+                        '${formattedPrice}₮',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              decoration: TextDecoration.lineThrough,
-                            ),
+                            decoration: TextDecoration.lineThrough,
+                            fontWeight: FontWeight.w300),
                       ),
                     ],
                   ),
-                // Product Price and Discount
                 Text(
-                  '${formattedPrice}₮',
+                  '${formattedCalcPrice}₮',
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
               ],

@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:uju_app/routes/app_router.dart';
+import 'package:uju_app/theme/app_theme.dart';
 import '../api/api_service.dart';
 import '../api/api_url.dart';
 
@@ -132,7 +133,21 @@ class ProductItem extends StatelessWidget {
                   Positioned(
                     bottom: 2,
                     right: 0,
-                    child: Icon(Icons.bookmark_border, color: Colors.white),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Icon(
+                          Icons.bookmark,
+                          color: Colors.white.withOpacity(0.5),
+                          size: 28.0,
+                        ),
+                        Icon(
+                          Icons.bookmark_border,
+                          color: Colors.white,
+                          size: 28.0,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -155,7 +170,7 @@ class ProductItem extends StatelessWidget {
                   Row(
                     children: [
                       Icon(Icons.bookmark_border,
-                          color: Colors.orange, size: 16),
+                          color: AppTheme.ujuColor, size: 16),
                       SizedBox(width: 4),
                       Text(
                         wishlistcount != null ? wishlistcount.toString() : '0',
@@ -166,7 +181,8 @@ class ProductItem extends StatelessWidget {
                   SizedBox(width: 10),
                   Row(
                     children: [
-                      Icon(Icons.sell_outlined, color: Colors.orange, size: 16),
+                      Icon(Icons.sell_outlined,
+                          color: AppTheme.ujuColor, size: 16),
                       SizedBox(width: 2),
                       Text(
                         salecount != null ? salecount.toString() : '0',
