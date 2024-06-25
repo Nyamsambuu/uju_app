@@ -1,5 +1,6 @@
 // lib/components/footer.dart
 import 'package:flutter/material.dart';
+import 'package:uju_app/theme/app_theme.dart';
 
 class Footer extends StatelessWidget {
   final int selectedIndex;
@@ -12,8 +13,8 @@ class Footer extends StatelessWidget {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       currentIndex: selectedIndex,
-      selectedItemColor: Color(0xFFFA541B),
-      unselectedItemColor: const Color.fromARGB(255, 76, 76, 76),
+      selectedItemColor: AppTheme.ujuColor,
+      unselectedItemColor: const Color(0xFF575D63),
       backgroundColor: Colors.white,
       items: [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Нүүр'),

@@ -113,4 +113,36 @@ class ApiService {
       throw Exception('Failed to load reviews');
     }
   }
+
+  Future<void> setFavorite(int itemid, String userid, String token) async {
+    final data = [
+      {
+        'itemid': itemid,
+        'userid': userid,
+      },
+    ];
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/Product/set_wishlists'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(data),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to set favorite: ${response.body}');
+    }
+  }
+
+  Future<void> removeFavorite(int id, String token) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/api/Product/delete_wishlists?id=$id'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to remove favorite: ${response.body}');
+    }
+  }
 }

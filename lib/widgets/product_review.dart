@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -102,7 +101,10 @@ class _ReviewState extends State<Review> {
                     padding: const EdgeInsets.symmetric(horizontal: 30),
                     child: Column(
                       children: [
-                        Text(widget.product.valuationdundaj!.toStringAsFixed(1),
+                        Text(
+                            widget.product.valuationdundaj
+                                    ?.toStringAsFixed(1) ??
+                                'N/A',
                             style: Theme.of(context).textTheme.headlineLarge),
                         Row(
                           mainAxisAlignment:
@@ -151,94 +153,99 @@ class _ReviewState extends State<Review> {
           ),
         ),
         Divider(thickness: 0.25),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          itemCount: displayReviewsCount + (_showAllReviews ? 0 : 1),
-          itemBuilder: (context, index) {
-            if (index == displayReviewsCount && !_showAllReviews) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Color(0xFFFA541B),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  height: 50,
-                  child: Center(
-                    child: TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _showReviewList(context);
-                        });
-                      },
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Бусад үнэлгээг харах',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500),
+        widget.product.valuation.isEmpty
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(child: Text('Өгсөн үнэлгээ байхгүй байна')),
+              )
+            : ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: displayReviewsCount + (_showAllReviews ? 0 : 1),
+                itemBuilder: (context, index) {
+                  if (index == displayReviewsCount && !_showAllReviews) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xFFFA541B),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        height: 50,
+                        child: Center(
+                          child: TextButton(
+                            onPressed: () {
+                              setState(() {
+                                _showReviewList(context);
+                              });
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Бусад үнэлгээг харах',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                Text(
+                                  ' (${widget.product.valuation.length})',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ],
+                            ),
                           ),
-                          Text(
-                            ' (${widget.product.valuation.length})',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    );
+                  }
+
+                  final review = widget.product.valuation[index];
+                  final formattedDate =
+                      DateFormat('yyyy/MM/dd HH:mm').format(review.updated);
+
+                  List<Widget> stars = List.generate(review.rate, (i) {
+                    return Icon(Icons.star, color: AppTheme.ujuColor, size: 12);
+                  });
+
+                  return Column(
+                    children: [
+                      ListTile(
+                        leading: CircleAvatar(
+                          radius: 15,
+                          backgroundColor: AppTheme.ujuColor,
+                          child: Text(
+                            review.username[0].toUpperCase(),
+                            style: TextStyle(color: Colors.white),
                           ),
-                        ],
+                        ),
+                        title: Row(
+                          children: [
+                            Text(review.username,
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                ...stars,
+                                SizedBox(width: 5),
+                                Text('$formattedDate'),
+                              ],
+                            ),
+                            SizedBox(height: 4),
+                            Text('${review.comment}'),
+                          ],
+                        ),
                       ),
-                    ),
-                  ),
-                ),
-              );
-            }
-
-            final review = widget.product.valuation[index];
-            final formattedDate =
-                DateFormat('yyyy/MM/dd HH:mm').format(review.updated);
-
-            List<Widget> stars = List.generate(review.rate, (i) {
-              return Icon(Icons.star, color: AppTheme.ujuColor, size: 12);
-            });
-
-            return Column(
-              children: [
-                ListTile(
-                  leading: CircleAvatar(
-                    radius: 15,
-                    backgroundColor: AppTheme.ujuColor,
-                    child: Text(
-                      review.username[0].toUpperCase(),
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  title: Row(
-                    children: [
-                      Text(review.username,
-                          style: TextStyle(fontWeight: FontWeight.bold)),
                     ],
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          ...stars,
-                          SizedBox(width: 5),
-                          Text('$formattedDate'),
-                        ],
-                      ),
-                      SizedBox(height: 4),
-                      Text('${review.comment}'),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          },
-        )
+                  );
+                },
+              )
       ],
     );
   }
@@ -301,6 +308,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
                 Container(
                   margin: EdgeInsets.only(right: 10.0),
                   child: widget.product.productImages.isNotEmpty &&
+                          // ignore: unnecessary_null_comparison
                           widget.product.productImages[0] != null
                       ? Image.network(
                           '${getBaseURL()}/api/file/download?ID=${widget.product.productImages[0]}',

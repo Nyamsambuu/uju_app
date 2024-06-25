@@ -1,6 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:uju_app/providers/app_provider.dart';
 import 'package:uju_app/routes/app_router.dart';
 import 'package:uju_app/theme/app_theme.dart';
 import '../api/api_service.dart';
@@ -40,7 +42,7 @@ class ProductList extends StatelessWidget {
                     final imageUrl = (product['images'] != null &&
                             product['images'].isNotEmpty)
                         ? '${getBaseURL()}/api/file/download?ID=${product['images'][0]['id']}&size=180'
-                        : 'https://via.placeholder.com/100';
+                        : null;
 
                     final formattedPrice = NumberFormat("#,##0", "en_US")
                         .format(product['price']['calcprice']);
@@ -69,7 +71,7 @@ class ProductList extends StatelessWidget {
 
 class ProductItem extends StatelessWidget {
   final int id;
-  final String imageUrl;
+  final String? imageUrl;
   final String title;
   final String price;
   final String rating;
@@ -90,6 +92,11 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appProvider = Provider.of<AppProvider>(context);
+    final favoriteItem = appProvider.favoriteItems
+        .firstWhere((item) => item['itemid'] == id, orElse: () => null);
+    final isFavorite = favoriteItem != null;
+
     return GestureDetector(
       onTap: () {
         context.router.push(ProductDetailScreenRoute(productId: id));
@@ -110,16 +117,41 @@ class ProductItem extends StatelessWidget {
                     child: Container(
                       height: 150,
                       width: double.infinity,
-                      child: Image.network(
-                        imageUrl,
-                        fit: BoxFit.cover,
-                      ),
+                      child: imageUrl != null
+                          ? Image.network(
+                              imageUrl!,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: Colors.grey,
+                                  child: Center(
+                                    child: Text(
+                                      'Зураггүй',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                          : Container(
+                              color: Colors.grey,
+                              child: Center(
+                                child: Text(
+                                  'Зураггүй',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
                     ),
                   ),
                   if (discount != null)
                     Positioned(
-                      top: 8,
-                      left: 8,
+                      top: -10,
+                      left: -10,
                       child: Container(
                         padding:
                             EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -131,22 +163,54 @@ class ProductItem extends StatelessWidget {
                       ),
                     ),
                   Positioned(
-                    bottom: 2,
-                    right: 0,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Icon(
-                          Icons.bookmark,
-                          color: Colors.white.withOpacity(0.5),
-                          size: 28.0,
-                        ),
-                        Icon(
-                          Icons.bookmark_border,
-                          color: Colors.white,
-                          size: 28.0,
-                        ),
-                      ],
+                    bottom: -10,
+                    right: -10,
+                    child: IconButton(
+                      icon: isFavorite
+                          ? Icon(
+                              Icons.bookmark,
+                              color: AppTheme.ujuColor,
+                              size: 28.0,
+                            )
+                          : Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Icon(
+                                  Icons.bookmark,
+                                  color: Colors.white.withOpacity(0.5),
+                                  size: 28.0,
+                                ),
+                                Icon(
+                                  Icons.bookmark_border,
+                                  color: Color(0xFFFAFAFA),
+                                  size: 28.0,
+                                ),
+                              ],
+                            ),
+                      onPressed: () async {
+                        if (!appProvider.isLoggedIn) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Та нэвтрэх хэрэгтэй'),
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (isFavorite) {
+                          await appProvider.removeFavorite(favoriteItem['id']);
+                        } else {
+                          await appProvider.setFavorite(id);
+                        }
+
+                        if (appProvider.error.isNotEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(appProvider.error),
+                            ),
+                          );
+                        }
+                      },
                     ),
                   ),
                 ],

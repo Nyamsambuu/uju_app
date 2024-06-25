@@ -98,7 +98,7 @@ class ProductModel {
     }
 
     return ProductModel(
-      id: (retdata['id'] as num).toInt(),
+      id: (retdata['id'] != null) ? (retdata['id'] as num).toInt() : 0,
       name: retdata['name'] ?? '',
       productImages: productImages,
       bodyImages: bodyImages,

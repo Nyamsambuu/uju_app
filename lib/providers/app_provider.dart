@@ -5,7 +5,15 @@ import 'package:uju_app/models/user_model.dart';
 import 'package:uju_app/api/api_service.dart';
 
 class AppProvider with ChangeNotifier {
-  UserModel _userModel = UserModel(userid: '', userImage: '', userpoint: 0);
+  UserModel _userModel = UserModel(
+    userid: '',
+    userImage: '',
+    userpoint: 0,
+    email: null,
+    username: null,
+    gender: null,
+    birthday: null,
+  );
   List<dynamic> _shoppingCart = [];
   List<dynamic> _favoriteItems = [];
   List<dynamic> _reviews = [];
@@ -72,8 +80,12 @@ class AppProvider with ChangeNotifier {
       final data = await _apiService.fetchUser(userid);
       _userModel = UserModel(
         userid: userid,
-        userImage: data['retdata']['images'][0],
+        userImage: data['retdata']['images'][0].toString(),
         userpoint: data['retdata']['userpoint'],
+        email: data['retdata']['email'],
+        username: data['retdata']['username'],
+        gender: data['retdata']['gender'],
+        birthday: data['retdata']['birthday'],
       );
       _loading = false;
     } catch (error) {
@@ -89,10 +101,13 @@ class AppProvider with ChangeNotifier {
         final res = await _apiService.getWishlists(_userModel.userid);
         if (res['retdata'] != null) {
           _favoriteItems = res['retdata'];
-          notifyListeners();
+        } else {
+          _favoriteItems = []; // Clear the list if the response is null
         }
+        notifyListeners();
       } catch (error) {
         _error = error.toString();
+        _favoriteItems = []; // Clear the list on error
         notifyListeners();
       }
     }
@@ -158,5 +173,69 @@ class AppProvider with ChangeNotifier {
 
   Future<void> storeUserModel(UserModel userModel) async {
     await _secureStorage.write(key: 'userid', value: userModel.userid);
+  }
+
+  bool get isLoggedIn => _token.isNotEmpty && _userModel.userid.isNotEmpty;
+
+  Future<void> setFavorite(int itemid) async {
+    if (!isLoggedIn) {
+      // Show message if not logged in
+      _error = 'Та нэвтрэх хэрэгтэй';
+      notifyListeners();
+      return;
+    }
+
+    _saving = true;
+    notifyListeners();
+
+    try {
+      await _apiService.setFavorite(itemid, _userModel.userid, _token);
+      await loadWishes();
+    } catch (error) {
+      if (error.toString().contains('401')) {
+        _error = 'Unauthorized: Please check your credentials.';
+      } else {
+        _error = error.toString();
+      }
+    } finally {
+      _saving = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> removeFavorite(int itemid) async {
+    if (!isLoggedIn) {
+      // Show message if not logged in
+      _error = 'Та нэвтрэх хэрэгтэй';
+      notifyListeners();
+      return;
+    }
+
+    _saving = true;
+    notifyListeners();
+
+    try {
+      await _apiService.removeFavorite(itemid, _token);
+      await loadWishes();
+    } catch (error) {
+      if (error.toString().contains('401')) {
+        _error = 'Unauthorized: Please check your credentials.';
+      } else {
+        _error = error.toString();
+      }
+      _favoriteItems = _favoriteItems
+          .where((item) => item['itemid'] != itemid)
+          .toList(); // Remove the item from the list on error
+    } finally {
+      _saving = false;
+      notifyListeners();
+    }
+  }
+
+  @override
+  void notifyListeners() {
+    super.notifyListeners();
+    print('User is logged in: $isLoggedIn');
+    print('Current user: ${_userModel.userid}');
   }
 }

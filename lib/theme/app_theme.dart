@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class AppTheme {
   static const Color ujuColor = Color(0xFFFA541B);
@@ -9,6 +10,8 @@ class AppTheme {
       Color(0xFF1a1a1a); // Dark gray for light background
   static const Color textSecondaryColor =
       Color(0xFF666666); // Medium gray for light background
+
+  static final NumberFormat _nf = NumberFormat('#,###');
 
   static final ThemeData lightTheme = ThemeData(
     primaryColor: primaryColor,
@@ -39,6 +42,8 @@ class AppTheme {
         ),
       ),
     ),
+    dropdownMenuTheme: DropdownMenuThemeData(
+        inputDecorationTheme: InputDecorationTheme(fillColor: Colors.white)),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         backgroundColor: Colors.white,

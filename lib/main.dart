@@ -3,12 +3,16 @@ import 'package:provider/provider.dart';
 import 'package:uju_app/providers/app_provider.dart';
 import 'package:uju_app/providers/product_provider.dart';
 import 'package:uju_app/routes/app_router.dart';
+import 'package:uju_app/services/shared_preferences_service.dart';
 import 'package:uju_app/theme/app_theme.dart';
 import 'package:uju_app/routes/auth_guard.dart';
 
-void main() {
+void main() async {
+  // Initialization
   final authGuard = AuthGuard();
   final appRouter = AppRouter(authGuard);
+  WidgetsFlutterBinding.ensureInitialized();
+  await SharedPreferencesService().init();
 
   runApp(MyApp(appRouter: appRouter));
 }

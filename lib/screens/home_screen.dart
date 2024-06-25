@@ -1,26 +1,17 @@
 // lib/screens/home_screen.dart
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:uju_app/routes/app_router.dart';
-import '../components/header.dart';
+import 'package:uju_app/components/base_screen.dart';
 import '../components/slider.dart';
 import '../components/category_list.dart';
 import '../components/product_list.dart';
-import '../components/drawer_content.dart';
-import '../components/footer.dart'; // Import the Footer widget
 
 @RoutePage()
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
-        child: Header(),
-      ),
-      drawer: Drawer(
-        child: DrawerContent(),
-      ),
+    return BaseScreen(
+      selectedIndex: 0,
       body: Column(
         children: [
           Expanded(
@@ -29,15 +20,22 @@ class HomeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SliderWidget(),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        SizedBox(height: 16),
-                        CategoryList(),
-                        SizedBox(height: 16),
-                        Row(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: CategoryList(),
+                      ),
+                      SizedBox(height: 8),
+                      Divider(
+                        color: Color(0xFFF8F9FB),
+                        thickness: 10,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text('Эрэлттэй Бараа'.toUpperCase(),
@@ -59,35 +57,15 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        ProductList(),
-                      ],
-                    ),
+                      ),
+                      ProductList(),
+                    ],
                   ),
                 ],
               ),
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: Footer(
-        selectedIndex: 0, // Set the appropriate selected index
-        onItemTapped: (index) {
-          // Handle item tap and navigation
-          switch (index) {
-            case 0:
-              context.router.replace(HomeRoute());
-              break;
-            case 1:
-              context.router.replace(SearchRoute());
-              break;
-            case 2:
-              context.router.replace(OrdersRoute());
-              break;
-            case 3:
-              context.router.replace(ProfileRoute());
-              break;
-          }
-        },
       ),
     );
   }

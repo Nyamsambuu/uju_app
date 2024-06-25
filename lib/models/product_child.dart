@@ -23,10 +23,10 @@ class ProductChild {
 
   factory ProductChild.fromJson(Map<String, dynamic> json) {
     return ProductChild(
-      id: json["id"],
-      itemtype: json['itemtype'],
+      id: json["id"] ?? '',
+      itemtype: json['itemtype'] ?? '',
       salecount: json['salecount'] ?? 0,
-      quantity: json['quantity'],
+      quantity: json['quantity'] ?? 0,
       imageId: json['images'] != null && json['images'].isNotEmpty
           ? json['images'][0]['id']
           : 0,

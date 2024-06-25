@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:uju_app/api/api_url.dart';
@@ -16,13 +18,16 @@ class _ProductInfoState extends State<ProductInfo> {
 
   Future<void> _fetchImage(String url) async {
     try {
-      final response =
-          await http.get(Uri.parse(url)).timeout(Duration(seconds: 10));
+      final response = await http
+          .get(Uri.parse(url))
+          .timeout(Duration(seconds: 20)); // Increased timeout duration
       if (response.statusCode == 200) {
         print('Image fetched successfully');
       } else {
         print('Failed to load image: ${response.statusCode}');
       }
+    } on TimeoutException catch (e) {
+      print('Timeout fetching image: $e');
     } catch (e) {
       print('Error fetching image: $e');
     }

@@ -12,6 +12,10 @@ class _SliderWidgetState extends State<SliderWidget> {
   final ApiService apiService = ApiService();
   PageController _pageController = PageController(initialPage: 0);
   Timer? _timer;
+  int _currentPage = 0;
+  List<dynamic> images = [];
+  bool isLoading = true;
+  bool hasError = false;
 
   @override
   void initState() {
@@ -19,12 +23,13 @@ class _SliderWidgetState extends State<SliderWidget> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startAutoPlay();
     });
+    _fetchImages();
   }
 
   void _startAutoPlay() {
     _timer = Timer.periodic(Duration(seconds: 5), (Timer timer) {
       if (_pageController.hasClients) {
-        int nextPage = (_pageController.page!.toInt() + 1) % 1000;
+        int nextPage = _currentPage + 1;
         _pageController.animateToPage(
           nextPage,
           duration: Duration(milliseconds: 500),
@@ -32,6 +37,28 @@ class _SliderWidgetState extends State<SliderWidget> {
         );
       }
     });
+  }
+
+  void _fetchImages() async {
+    try {
+      final fetchedImages = await apiService.fetchSliderImages();
+      if (mounted) {
+        setState(() {
+          images = fetchedImages;
+          isLoading = false;
+        });
+        // Start in the middle to facilitate infinite scrolling
+        _pageController = PageController(initialPage: images.length * 500);
+        _currentPage = images.length * 500;
+      }
+    } catch (error) {
+      if (mounted) {
+        setState(() {
+          hasError = true;
+          isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -43,26 +70,35 @@ class _SliderWidgetState extends State<SliderWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<dynamic>>(
-      future: apiService.fetchSliderImages(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else {
-          final images = snapshot.data!;
-          if (images.isEmpty) {
-            return Center(child: Text('No images available'));
-          }
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    } else if (hasError) {
+      return Center(child: Text('Error loading images'));
+    } else if (images.isEmpty) {
+      return Center(child: Text('No images available'));
+    }
 
-          return Container(
-            height: 100,
-            width: MediaQuery.of(context).size.width,
+    return Container(
+      height: 140, // Adjust height as needed
+      width: MediaQuery.of(context).size.width,
+      child: Stack(
+        children: [
+          NotificationListener<ScrollNotification>(
+            onNotification: (ScrollNotification scrollInfo) {
+              if (scrollInfo is ScrollEndNotification) {
+                _handlePageChange();
+              }
+              return false;
+            },
             child: PageView.builder(
               controller: _pageController,
               itemCount:
                   images.length * 1000, // Infinite loop by large itemCount
+              onPageChanged: (index) {
+                setState(() {
+                  _currentPage = index;
+                });
+              },
               itemBuilder: (context, index) {
                 final imageId = images[index % images.length]['id'];
                 final imageUrl =
@@ -74,9 +110,40 @@ class _SliderWidgetState extends State<SliderWidget> {
                 );
               },
             ),
-          );
-        }
-      },
+          ),
+          Positioned(
+            bottom: 10,
+            right: 10,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black54,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                '${(_currentPage % images.length) + 1}/${images.length}',
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
+          )
+        ],
+      ),
     );
+  }
+
+  void _handlePageChange() {
+    // Loop back to the middle when reaching the start or end
+    if (_currentPage == 0) {
+      _pageController.jumpToPage(images.length * 500);
+      setState(() {
+        _currentPage = images.length * 500;
+      });
+    } else if (_currentPage == images.length * 1000 - 1) {
+      _pageController.jumpToPage(images.length * 500);
+      setState(() {
+        _currentPage = images.length * 500;
+      });
+    }
   }
 }

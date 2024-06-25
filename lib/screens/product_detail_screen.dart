@@ -151,7 +151,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ProductDetailDelivery(
                             product: productProvider.product!),
                         Divider(
-                          color: Color(0xFFF3F2F0),
+                          color: Color(0xFFF8F9FB),
                           thickness: 10,
                         ),
                       ],
@@ -192,7 +192,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                         SizedBox(height: 16),
                         Divider(
-                          color: Color(0xFFF3F2F0),
+                          color: Color(0xFFF8F9FB),
                           thickness: 10,
                         ),
                         Container(
@@ -205,7 +205,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                         SizedBox(height: 16),
                         Divider(
-                          color: Color(0xFFF3F2F0),
+                          color: Color(0xFFF8F9FB),
                           thickness: 10,
                         ),
                         Container(
@@ -215,7 +215,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           child: ProductReturnPolicy(),
                         ),
                         Divider(
-                          color: Color(0xFFF3F2F0),
+                          color: Color(0xFFF8F9FB),
                           thickness: 10,
                         ),
                         Container(

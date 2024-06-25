@@ -2,12 +2,19 @@ class UserModel {
   String userid;
   String userImage;
   int userpoint;
+  String? email;
+  String? username;
+  int? gender;
+  String? birthday;
 
-  UserModel({
-    required this.userid,
-    required this.userImage,
-    required this.userpoint,
-  });
+  UserModel(
+      {required this.userid,
+      required this.userImage,
+      required this.userpoint,
+      this.email,
+      this.username,
+      this.gender,
+      this.birthday});
 }
 
 class OrderState {
