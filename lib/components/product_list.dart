@@ -10,11 +10,13 @@ import '../api/api_url.dart';
 
 class ProductList extends StatelessWidget {
   final ApiService apiService = ApiService();
+  final int sortType;
+  ProductList({required this.sortType});
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<dynamic>>(
-      future: apiService.fetchProducts(),
+      future: apiService.fetchProducts(sortType),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
@@ -150,8 +152,8 @@ class ProductItem extends StatelessWidget {
                   ),
                   if (discount != null)
                     Positioned(
-                      top: -10,
-                      left: -10,
+                      top: -8,
+                      left: -6,
                       child: Container(
                         padding:
                             EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -163,27 +165,36 @@ class ProductItem extends StatelessWidget {
                       ),
                     ),
                   Positioned(
-                    bottom: -10,
-                    right: -10,
+                    bottom: -8,
+                    right: -6,
                     child: IconButton(
                       icon: isFavorite
-                          ? Icon(
-                              Icons.bookmark,
-                              color: AppTheme.ujuColor,
-                              size: 28.0,
+                          ? Transform.scale(
+                              scaleX: 1.2, // Scale the width by 1.5 times
+                              child: Icon(
+                                Icons.bookmark,
+                                color: AppTheme.ujuColor,
+                                size: 26.0,
+                              ),
                             )
                           : Stack(
                               alignment: Alignment.center,
                               children: [
-                                Icon(
-                                  Icons.bookmark,
-                                  color: Colors.white.withOpacity(0.5),
-                                  size: 28.0,
+                                Transform.scale(
+                                  scaleX: 1.2, // Scale the width by 1.5 times
+                                  child: Icon(
+                                    Icons.bookmark,
+                                    color: Colors.white.withOpacity(0.5),
+                                    size: 25.5,
+                                  ),
                                 ),
-                                Icon(
-                                  Icons.bookmark_border,
-                                  color: Color(0xFFFAFAFA),
-                                  size: 28.0,
+                                Transform.scale(
+                                  scaleX: 1.2, // Scale the width by 1.5 times
+                                  child: Icon(
+                                    Icons.bookmark_border,
+                                    color: Color(0xFFFAFAFA),
+                                    size: 25.5,
+                                  ),
                                 ),
                               ],
                             ),
@@ -191,7 +202,7 @@ class ProductItem extends StatelessWidget {
                         if (!appProvider.isLoggedIn) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Та нэвтрэх хэрэгтэй'),
+                              content: Text('Та нэвтрэх хэрэгтэй байна.'),
                             ),
                           );
                           return;

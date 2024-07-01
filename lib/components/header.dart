@@ -1,11 +1,13 @@
+// lib/components/header.dart
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uju_app/providers/app_provider.dart';
 import 'package:uju_app/routes/app_router.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:uju_app/theme/app_theme.dart';
 
-class Header extends StatelessWidget {
+class Header extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final appProvider = Provider.of<AppProvider>(context);
@@ -26,8 +28,8 @@ class Header extends StatelessWidget {
             child: Container(
               height: 40,
               decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(10),
+                color: Color(0xFFF8F9FB),
+                borderRadius: BorderRadius.circular(5),
               ),
               child: TextField(
                 decoration: InputDecoration(
@@ -40,7 +42,7 @@ class Header extends StatelessWidget {
                   border: InputBorder.none,
                   contentPadding:
                       EdgeInsets.symmetric(vertical: 4, horizontal: 20),
-                  suffixIcon: Icon(Icons.search, color: Colors.grey),
+                  suffixIcon: Icon(Icons.search, color: AppTheme.primaryColor),
                 ),
               ),
             ),
@@ -85,4 +87,7 @@ class Header extends StatelessWidget {
       ],
     );
   }
+
+  @override
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }

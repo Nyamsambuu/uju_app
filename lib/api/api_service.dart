@@ -31,9 +31,9 @@ class ApiService {
     }
   }
 
-  Future<List<dynamic>> fetchProducts() async {
+  Future<List<dynamic>> fetchProducts(int sortType) async {
     final response = await http.get(Uri.parse(
-        '$baseUrl/api/Product/get_Item_list?isparent=true&sorttype=1'));
+        '$baseUrl/api/Product/get_Item_list?isparent=true&sorttype=$sortType'));
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
       return data['retdata'];

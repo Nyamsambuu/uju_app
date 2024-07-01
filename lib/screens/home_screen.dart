@@ -2,12 +2,26 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:uju_app/components/base_screen.dart';
+import 'package:uju_app/theme/app_theme.dart';
 import '../components/slider.dart';
 import '../components/category_list.dart';
 import '../components/product_list.dart';
 
 @RoutePage()
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedSortType = 1;
+
+  final List<Map<String, dynamic>> _sortOptions = [
+    {'value': 1, 'label': 'Борлуулалтаар'},
+    {'value': 2, 'label': 'Хамгийн их таалагдсан'},
+    {'value': 3, 'label': 'Хамгийн сүүлд нэмэгдсэн'},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
@@ -41,24 +55,40 @@ class HomeScreen extends StatelessWidget {
                             Text('Эрэлттэй Бараа'.toUpperCase(),
                                 style:
                                     Theme.of(context).textTheme.headlineSmall),
-                            TextButton(
-                              onPressed: () {},
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'Борлуулалтаар',
-                                    style:
-                                        Theme.of(context).textTheme.labelMedium,
-                                  ),
-                                  Icon(Icons.arrow_drop_down),
-                                ],
-                              ),
-                            ),
                           ],
                         ),
                       ),
-                      ProductList(),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Wrap(
+                                spacing: 8.0,
+                                children: _sortOptions.map((option) {
+                                  return ChoiceChip(
+                                    selectedColor:
+                                        AppTheme.ujuColor.withOpacity(0.85),
+                                    labelStyle:
+                                        Theme.of(context).textTheme.labelSmall,
+                                    label: Text(option['label']),
+                                    selected:
+                                        _selectedSortType == option['value'],
+                                    onSelected: (selected) {
+                                      setState(() {
+                                        _selectedSortType = option['value'];
+                                      });
+                                    },
+                                  );
+                                }).toList(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      ProductList(sortType: _selectedSortType),
                     ],
                   ),
                 ],
