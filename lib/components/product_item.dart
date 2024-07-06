@@ -1,5 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uju_app/providers/app_provider.dart';
 import 'package:uju_app/routes/app_router.dart';
 import 'package:uju_app/theme/app_theme.dart';
 
@@ -26,9 +28,13 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appProvider = Provider.of<AppProvider>(context);
+    final favoriteItem = appProvider.favoriteItems
+        .firstWhere((item) => item['itemid'] == id, orElse: () => null);
+    final isFavorite = favoriteItem != null;
     return GestureDetector(
       onTap: () {
-        context.router.push(ProductDetailScreenRoute(productId: id));
+        context.router.push(ProductDetailRoute(productId: id));
       },
       child: ConstrainedBox(
         constraints: BoxConstraints(
@@ -92,22 +98,63 @@ class ProductItem extends StatelessWidget {
                       ),
                     ),
                   Positioned(
-                    bottom: 2,
-                    right: 0,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Icon(
-                          Icons.bookmark,
-                          color: Colors.white.withOpacity(0.5),
-                          size: 28.0,
-                        ),
-                        Icon(
-                          Icons.bookmark_border,
-                          color: Colors.white,
-                          size: 28.0,
-                        ),
-                      ],
+                    bottom: -8,
+                    right: -6,
+                    child: IconButton(
+                      icon: isFavorite
+                          ? Transform.scale(
+                              scaleX: 1.2, // Scale the width by 1.5 times
+                              child: Icon(
+                                Icons.bookmark,
+                                color: AppTheme.ujuColor,
+                                size: 26.0,
+                              ),
+                            )
+                          : Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Transform.scale(
+                                  scaleX: 1.2, // Scale the width by 1.5 times
+                                  child: Icon(
+                                    Icons.bookmark,
+                                    color: Colors.white.withOpacity(0.5),
+                                    size: 25.5,
+                                  ),
+                                ),
+                                Transform.scale(
+                                  scaleX: 1.2, // Scale the width by 1.5 times
+                                  child: Icon(
+                                    Icons.bookmark_border,
+                                    color: Color(0xFFFAFAFA),
+                                    size: 25.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                      onPressed: () async {
+                        if (!appProvider.isLoggedIn) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Та нэвтрэх хэрэгтэй байна.'),
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (isFavorite) {
+                          await appProvider.removeFavorite(favoriteItem['id']);
+                        } else {
+                          await appProvider.setFavorite(id);
+                        }
+
+                        if (appProvider.error.isNotEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(appProvider.error),
+                            ),
+                          );
+                        }
+                      },
                     ),
                   ),
                 ],
@@ -131,8 +178,9 @@ class ProductItem extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.bookmark_border,
-                            color: AppTheme.ujuColor, size: 16),
+                        Icon(Icons.shopping_bag,
+                            color: AppTheme.ujuColor.withOpacity(0.8),
+                            size: 16),
                         SizedBox(width: 4),
                         Text(
                           wishlistcount != null
@@ -145,8 +193,7 @@ class ProductItem extends StatelessWidget {
                     SizedBox(width: 10),
                     Row(
                       children: [
-                        Icon(Icons.sell_outlined,
-                            color: AppTheme.ujuColor, size: 16),
+                        Icon(Icons.bookmark, color: Colors.grey[600], size: 16),
                         SizedBox(width: 2),
                         Text(
                           salecount != null ? salecount.toString() : '0',

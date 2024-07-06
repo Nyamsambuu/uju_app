@@ -69,8 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 spacing: 8.0,
                                 children: _sortOptions.map((option) {
                                   return ChoiceChip(
-                                    selectedColor:
-                                        AppTheme.ujuColor.withOpacity(0.85),
+                                    selectedColor: Colors.grey[350],
                                     labelStyle:
                                         Theme.of(context).textTheme.labelSmall,
                                     label: Text(option['label']),

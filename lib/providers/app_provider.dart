@@ -236,6 +236,7 @@ class AppProvider with ChangeNotifier {
   void notifyListeners() {
     super.notifyListeners();
     print('User is logged in: $isLoggedIn');
-    print('Current user: ${_userModel.userid}');
+    print('Current user: ${_userModel}');
+    print('token: ${token}');
   }
 }

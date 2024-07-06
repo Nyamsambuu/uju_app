@@ -1,16 +1,14 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:uju_app/providers/app_provider.dart';
-import 'package:uju_app/routes/app_router.dart';
-import 'package:uju_app/theme/app_theme.dart';
+import 'package:shimmer/shimmer.dart';
 import '../api/api_service.dart';
 import '../api/api_url.dart';
+import 'product_item.dart'; // Import the ProductItem widget
 
 class ProductList extends StatelessWidget {
   final ApiService apiService = ApiService();
   final int sortType;
+
   ProductList({required this.sortType});
 
   @override
@@ -19,7 +17,7 @@ class ProductList extends StatelessWidget {
       future: apiService.fetchProducts(sortType),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return ShimmerLoading(); // Display skeleton loading
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -48,11 +46,12 @@ class ProductList extends StatelessWidget {
 
                     final formattedPrice = NumberFormat("#,##0", "en_US")
                         .format(product['price']['calcprice']);
+
                     return ProductItem(
                       id: product['id'],
                       imageUrl: imageUrl,
                       title: product['name'],
-                      price: '$formattedPrice' + '₮',
+                      price: '$formattedPrice₮',
                       rating: '${product['rating']}',
                       discount: product['discount'] != null
                           ? '${product['discount']}%'
@@ -71,205 +70,71 @@ class ProductList extends StatelessWidget {
   }
 }
 
-class ProductItem extends StatelessWidget {
-  final int id;
-  final String? imageUrl;
-  final String title;
-  final String price;
-  final String rating;
-  final String? discount;
-  final int? wishlistcount;
-  final int? salecount;
-
-  ProductItem({
-    required this.id,
-    required this.imageUrl,
-    required this.title,
-    required this.price,
-    required this.rating,
-    this.discount,
-    this.wishlistcount,
-    this.salecount,
-  });
-
+class ShimmerLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final appProvider = Provider.of<AppProvider>(context);
-    final favoriteItem = appProvider.favoriteItems
-        .firstWhere((item) => item['itemid'] == id, orElse: () => null);
-    final isFavorite = favoriteItem != null;
-
-    return GestureDetector(
-      onTap: () {
-        context.router.push(ProductDetailScreenRoute(productId: id));
-      },
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: 350,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(5.0),
-                    child: Container(
-                      height: 150,
-                      width: double.infinity,
-                      child: imageUrl != null
-                          ? Image.network(
-                              imageUrl!,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  color: Colors.grey,
-                                  child: Center(
-                                    child: Text(
-                                      'Зураггүй',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            )
-                          : Container(
-                              color: Colors.grey,
-                              child: Center(
-                                child: Text(
-                                  'Зураггүй',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                    ),
-                  ),
-                  if (discount != null)
-                    Positioned(
-                      top: -8,
-                      left: -6,
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        color: Colors.red,
-                        child: Text(
-                          discount!,
-                          style: TextStyle(color: Colors.white, fontSize: 12),
-                        ),
-                      ),
-                    ),
-                  Positioned(
-                    bottom: -8,
-                    right: -6,
-                    child: IconButton(
-                      icon: isFavorite
-                          ? Transform.scale(
-                              scaleX: 1.2, // Scale the width by 1.5 times
-                              child: Icon(
-                                Icons.bookmark,
-                                color: AppTheme.ujuColor,
-                                size: 26.0,
-                              ),
-                            )
-                          : Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Transform.scale(
-                                  scaleX: 1.2, // Scale the width by 1.5 times
-                                  child: Icon(
-                                    Icons.bookmark,
-                                    color: Colors.white.withOpacity(0.5),
-                                    size: 25.5,
-                                  ),
-                                ),
-                                Transform.scale(
-                                  scaleX: 1.2, // Scale the width by 1.5 times
-                                  child: Icon(
-                                    Icons.bookmark_border,
-                                    color: Color(0xFFFAFAFA),
-                                    size: 25.5,
-                                  ),
-                                ),
-                              ],
-                            ),
-                      onPressed: () async {
-                        if (!appProvider.isLoggedIn) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Та нэвтрэх хэрэгтэй байна.'),
-                            ),
-                          );
-                          return;
-                        }
-
-                        if (isFavorite) {
-                          await appProvider.removeFavorite(favoriteItem['id']);
-                        } else {
-                          await appProvider.setFavorite(id);
-                        }
-
-                        if (appProvider.error.isNotEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(appProvider.error),
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 8),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.labelLarge,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              SizedBox(height: 2),
-              Text(
-                price,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              SizedBox(height: 2),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Row(
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          GridView.builder(
+            padding: const EdgeInsets.all(8.0),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 0.0,
+              mainAxisSpacing: 0.0,
+              childAspectRatio: 0.65,
+            ),
+            itemCount: 6, // Number of skeleton items to show
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              return Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.bookmark_border,
-                          color: AppTheme.ujuColor, size: 16),
-                      SizedBox(width: 4),
-                      Text(
-                        wishlistcount != null ? wishlistcount.toString() : '0',
-                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      Container(
+                        height: 150,
+                        color: Colors.white,
+                      ),
+                      SizedBox(height: 8),
+                      Container(
+                        height: 16,
+                        width: double.infinity,
+                        color: Colors.white,
+                      ),
+                      SizedBox(height: 8),
+                      Container(
+                        height: 16,
+                        width: 100,
+                        color: Colors.white,
+                      ),
+                      SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Container(
+                            height: 16,
+                            width: 20,
+                            color: Colors.white,
+                          ),
+                          SizedBox(width: 8),
+                          Container(
+                            height: 16,
+                            width: 20,
+                            color: Colors.white,
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  SizedBox(width: 10),
-                  Row(
-                    children: [
-                      Icon(Icons.sell_outlined,
-                          color: AppTheme.ujuColor, size: 16),
-                      SizedBox(width: 2),
-                      Text(
-                        salecount != null ? salecount.toString() : '0',
-                        style: TextStyle(fontSize: 14, color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
+                ),
+              );
+            },
           ),
-        ),
+        ],
       ),
     );
   }

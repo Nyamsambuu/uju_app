@@ -8,6 +8,7 @@ import 'package:uju_app/components/menu_categories.dart';
 import 'package:uju_app/screens/search_page.dart';
 import 'package:uju_app/screens/login_screen.dart';
 import 'package:uju_app/routes/auth_guard.dart';
+import 'package:uju_app/screens/splash_screen.dart';
 
 part 'app_router.gr.dart';
 
@@ -21,14 +22,14 @@ class AppRouter extends _$AppRouter {
   List<AutoRoute> get routes => [
         AutoRoute(
           page: HomeRoute.page,
-          initial: true,
         ),
         AutoRoute(page: OrdersRoute.page, guards: [authGuard]),
         AutoRoute(page: ProfileRoute.page, guards: [authGuard]),
         AutoRoute(page: SearchRoute.page),
         AutoRoute(page: LoginRoute.page),
         AutoRoute(page: MenuCategoriesRoute.page),
-        AutoRoute(page: ProductDetailScreenRoute.page),
+        AutoRoute(page: SplashRoute.page, initial: true),
+        AutoRoute(page: ProductDetailRoute.page),
       ];
 }
 
