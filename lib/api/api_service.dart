@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -129,7 +131,16 @@ class ApiService {
       },
       body: jsonEncode(data),
     );
-    if (response.statusCode != 200) {
+    if (response.statusCode == 200) {
+      Fluttertoast.showToast(
+        msg: 'Хүслийн жагсаалтанд нэмэгдлээ',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 12.0,
+      );
+    } else if (response.statusCode != 200) {
       throw Exception('Failed to set favorite: ${response.body}');
     }
   }
@@ -141,7 +152,16 @@ class ApiService {
         'Authorization': 'Bearer $token',
       },
     );
-    if (response.statusCode != 200) {
+    if (response.statusCode == 200) {
+      Fluttertoast.showToast(
+        msg: 'Хүслийн жагсаалтаас хаслаа',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.grey[700],
+        textColor: Colors.white,
+        fontSize: 12.0,
+      );
+    } else if (response.statusCode != 200) {
       throw Exception('Failed to remove favorite: ${response.body}');
     }
   }

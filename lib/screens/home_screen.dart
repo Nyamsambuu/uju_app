@@ -2,7 +2,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:uju_app/components/base_screen.dart';
-import 'package:uju_app/theme/app_theme.dart';
 import '../components/slider.dart';
 import '../components/category_list.dart';
 import '../components/product_list.dart';
@@ -46,17 +45,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       Divider(
                         color: Color(0xFFF8F9FB),
                         thickness: 10,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Эрэлттэй Бараа'.toUpperCase(),
-                                style:
-                                    Theme.of(context).textTheme.headlineSmall),
-                          ],
-                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),

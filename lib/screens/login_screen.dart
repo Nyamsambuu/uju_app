@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         // Get the AppProvider and login
         final appProvider = Provider.of<AppProvider>(context, listen: false);
-        await appProvider.login(token);
+        await appProvider.login(token, '0');
 
         // Show success toast
         Fluttertoast.showToast(

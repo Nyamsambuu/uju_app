@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:uju_app/api/api_url.dart';
 import 'package:uju_app/models/user_model.dart';
 import 'package:uju_app/api/api_service.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class AppProvider with ChangeNotifier {
   UserModel _userModel = UserModel(
@@ -65,6 +68,15 @@ class AppProvider with ChangeNotifier {
     return await _secureStorage.read(key: 'token');
   }
 
+  Future<String?> fetchRefreshToken() async {
+    return await _secureStorage.read(key: 'refresh_token');
+  }
+
+  Future<void> saveTokens(String accessToken, String refreshToken) async {
+    await _secureStorage.write(key: 'token', value: accessToken);
+    await _secureStorage.write(key: 'refresh_token', value: refreshToken);
+  }
+
   Future<UserModel?> fetchUserModel() async {
     String? userid = await _secureStorage.read(key: 'userid');
     if (userid != null) {
@@ -76,6 +88,11 @@ class AppProvider with ChangeNotifier {
   Future<void> fetchUser(String userid) async {
     _loading = true;
     notifyListeners();
+
+    if (isTokenExpired(_token)) {
+      await refreshToken();
+    }
+
     try {
       final data = await _apiService.fetchUser(userid);
       _userModel = UserModel(
@@ -89,8 +106,12 @@ class AppProvider with ChangeNotifier {
       );
       _loading = false;
     } catch (error) {
-      _error = error.toString();
-      _loading = false;
+      if (error.toString().contains('401')) {
+        await handle401Error(() => fetchUser(userid));
+      } else {
+        _error = error.toString();
+        _loading = false;
+      }
     }
     notifyListeners();
   }
@@ -106,9 +127,13 @@ class AppProvider with ChangeNotifier {
         }
         notifyListeners();
       } catch (error) {
-        _error = error.toString();
-        _favoriteItems = []; // Clear the list on error
-        notifyListeners();
+        if (error.toString().contains('401')) {
+          await handle401Error(loadWishes);
+        } else {
+          _error = error.toString();
+          _favoriteItems = []; // Clear the list on error
+          notifyListeners();
+        }
       }
     }
   }
@@ -122,8 +147,12 @@ class AppProvider with ChangeNotifier {
           notifyListeners();
         }
       } catch (error) {
-        _error = error.toString();
-        notifyListeners();
+        if (error.toString().contains('401')) {
+          await handle401Error(loadShoppingCart);
+        } else {
+          _error = error.toString();
+          notifyListeners();
+        }
       }
     }
   }
@@ -131,6 +160,11 @@ class AppProvider with ChangeNotifier {
   Future<void> fetchReviews(int itemId) async {
     _loading = true;
     notifyListeners();
+
+    if (isTokenExpired(_token)) {
+      await refreshToken();
+    }
+
     try {
       final res = await _apiService.getReviews(itemId);
       if (res['retdata'] != null) {
@@ -138,18 +172,22 @@ class AppProvider with ChangeNotifier {
       }
       _loading = false;
     } catch (error) {
-      _error = error.toString();
-      _loading = false;
+      if (error.toString().contains('401')) {
+        await handle401Error(() => fetchReviews(itemId));
+      } else {
+        _error = error.toString();
+        _loading = false;
+      }
     }
     notifyListeners();
   }
 
-  Future<void> login(String token) async {
+  Future<void> login(String token, String refreshToken) async {
     _token = token;
     decodeToken(token);
 
-    // Store token securely
-    await storeToken(token);
+    // Store tokens securely
+    await saveTokens(token, refreshToken);
 
     await fetchUser(_userModel.userid);
     await loadWishes();
@@ -167,10 +205,6 @@ class AppProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> storeToken(String token) async {
-    await _secureStorage.write(key: 'token', value: token);
-  }
-
   Future<void> storeUserModel(UserModel userModel) async {
     await _secureStorage.write(key: 'userid', value: userModel.userid);
   }
@@ -179,7 +213,6 @@ class AppProvider with ChangeNotifier {
 
   Future<void> setFavorite(int itemid) async {
     if (!isLoggedIn) {
-      // Show message if not logged in
       _error = 'Та нэвтрэх хэрэгтэй';
       notifyListeners();
       return;
@@ -188,12 +221,16 @@ class AppProvider with ChangeNotifier {
     _saving = true;
     notifyListeners();
 
+    if (isTokenExpired(_token)) {
+      await refreshToken();
+    }
+
     try {
       await _apiService.setFavorite(itemid, _userModel.userid, _token);
       await loadWishes();
     } catch (error) {
       if (error.toString().contains('401')) {
-        _error = 'Unauthorized: Please check your credentials.';
+        await handle401Error(() => setFavorite(itemid));
       } else {
         _error = error.toString();
       }
@@ -205,7 +242,6 @@ class AppProvider with ChangeNotifier {
 
   Future<void> removeFavorite(int itemid) async {
     if (!isLoggedIn) {
-      // Show message if not logged in
       _error = 'Та нэвтрэх хэрэгтэй';
       notifyListeners();
       return;
@@ -214,12 +250,16 @@ class AppProvider with ChangeNotifier {
     _saving = true;
     notifyListeners();
 
+    if (isTokenExpired(_token)) {
+      await refreshToken();
+    }
+
     try {
       await _apiService.removeFavorite(itemid, _token);
       await loadWishes();
     } catch (error) {
       if (error.toString().contains('401')) {
-        _error = 'Unauthorized: Please check your credentials.';
+        await handle401Error(() => removeFavorite(itemid));
       } else {
         _error = error.toString();
       }
@@ -228,6 +268,72 @@ class AppProvider with ChangeNotifier {
           .toList(); // Remove the item from the list on error
     } finally {
       _saving = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> refreshToken() async {
+    final refreshToken = await fetchRefreshToken();
+    final accessToken = await fetchToken();
+
+    if (refreshToken == null) {
+      throw Exception('No refresh token available');
+    }
+
+    final response = await http.post(
+      Uri.parse('${getBaseURL()}/api/Systems/refresh-token'),
+      body: jsonEncode({
+        'access_token': accessToken,
+        'expires_in': 0,
+        'refresh_token': refreshToken,
+      }),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print('Response data: $data'); // Log the response data
+
+      final newAccessToken = data['retdata']['access_token'] as String?;
+      final newRefreshToken = data['retdata']['refresh_token'] as String?;
+
+      if (newAccessToken != null && newRefreshToken != null) {
+        await saveTokens(newAccessToken, newRefreshToken);
+        _token = newAccessToken;
+        decodeToken(newAccessToken);
+        notifyListeners();
+      } else {
+        print('Failed to parse tokens. Response data: $data'); // Add this line
+        throw Exception('Failed to parse new tokens');
+      }
+    } else {
+      print(
+          'Failed to refresh token. Status code: ${response.statusCode}'); // Add this line
+      throw Exception('Failed to refresh token');
+    }
+  }
+
+  bool isTokenExpired(String token) {
+    try {
+      Map<String, dynamic> decodedToken = Jwt.parseJwt(token);
+      int exp = decodedToken['exp'] * 1000; // Convert to milliseconds
+      if (DateTime.now().millisecondsSinceEpoch > exp) {
+        return true;
+      }
+    } catch (e) {
+      print('Error decoding token: $e');
+      return true; // If there is an error decoding the token, consider it expired.
+    }
+    return false;
+  }
+
+  Future<void> handle401Error(Function retryFunction) async {
+    try {
+      await refreshToken();
+      await retryFunction();
+    } catch (e) {
+      _error = 'Failed to refresh token';
+      _loading = false;
       notifyListeners();
     }
   }
